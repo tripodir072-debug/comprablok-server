@@ -58,8 +58,7 @@ app.post("/confirmar_entrega", (req, res) => {
   res.json({ status: "success", message: "Fondos liberados al vendedor" });
 });
 
-app.get('/', (req, res) => { res.send('🚀 SISTEMA TRATO INTEGRAL: ONLINE'); });
-
+app.get('/', (req, res) => { res.sendFile(__dirname + '/index.html'); });
 app.listen(3000, () => {
   console.log('🏁 RICHARDBRO: Motor completo y blindado listo!');
 });
