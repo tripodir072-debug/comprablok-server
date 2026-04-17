@@ -2,47 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Xupercomprabro - RichardBro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RICHARDBRO - TRATO Seguro</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #e9ecef; padding: 20px; }
-        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 450px; margin: 40px auto; }
-        h1 { color: #009ee3; margin-bottom: 10px; }
-        .monto-label { font-size: 1.2rem; color: #555; }
-        input { width: 85%; padding: 15px; margin: 25px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 22px; text-align: center; outline: none; transition: border-color 0.3s; }
-        input:focus { border-color: #009ee3; }
-        button { background-color: #009ee3; color: white; border: none; padding: 18px 35px; border-radius: 12px; font-size: 20px; cursor: pointer; width: 90%; font-weight: bold; box-shadow: 0 4px 12px rgba(0,158,227,0.3); }
-        button:hover { background-color: #007bb5; }
-        button:active { transform: scale(0.97); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0b0e11; color: white; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { text-align: center; padding: 20px; width: 100%; max-width: 400px; }
+        .logo { font-size: 32px; font-weight: bold; color: #f0b90b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .slogan { color: #848e9c; margin-bottom: 30px; font-size: 14px; }
+        .menu-btn { 
+            display: block; width: 100%; padding: 20px; margin: 15px 0; 
+            border-radius: 12px; border: none; font-size: 18px; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; text-decoration: none;
+        }
+        .btn-vender { background: #f0b90b; color: black; }
+        .btn-vender:hover { background: #d9a508; }
+        .btn-seguridad { background: #2b3139; color: white; border: 1px solid #474d57; }
+        .btn-seguridad:hover { background: #3e4650; }
+        .footer { margin-top: 40px; font-size: 12px; color: #474d57; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>🚀 RichardBro</h1>
-        <p class="monto-label">¿Cuánto es el monto de la venta?</p>
-        <input type="number" id="monto" placeholder="0.00" autofocus>
-        <button onclick="generarCobro()">CREAR VENTA AUTOMÁTICA</button>
+
+<div class="container">
+    <div class="logo">RICHARDBRO</div>
+    <div class="slogan">Seguridad en cada TRATO 🤝</div>
+
+    <a href="/vender.html" class="menu-btn btn-vender">💰 CREAR NUEVA VENTA</a>
+    
+    <a href="/registro.html" class="menu-btn btn-seguridad">🛡️ VERIFICAR MI DNI</a>
+    
+    <div class="footer">
+        © 2026 RICHARDBRO - Argentina<br>
+        Transacciones Protegidas
     </div>
+</div>
 
-    <script>
-    async function generarCobro() {
-        const montoInput = document.getElementById('monto').value;
-        if (!montoInput || montoInput <= 0) { alert("Poné un monto válido, Richard."); return; }
-
-        try {
-            const respuesta = await fetch(window.location.origin + '/crear-venta', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ monto: montoInput })
-            });
-
-            const data = await respuesta.json();
-            if (data.link) { window.location.href = data.link; } 
-            else { alert("Error al conectar con Mercado Pago."); }
-        } catch (error) {
-            alert("¡Error! Fijate si la terminal negra está prendida.");
-        }
-    }
-    </script>
 </body>
 </html>
