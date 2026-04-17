@@ -6,39 +6,38 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const client = new MercadoPagoConfig({ 
-    accessToken: process.env.MP_ACCESS_TOKEN
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MP_ACCESS_TOKEN
 });
 
-app.post('/crear-venta', async (req, res) => {
-    const { monto } = req.body;
-    console.log(`💰 Pedido recibido: $${monto}`);
-    const precioFinal = parseFloat(monto) * 1.10;
-
-    try {
-        const preference = new Preference(client);
-        const result = await preference.create({
-            body: {
-                items: [{
-                    title: 'Venta Comprablok Oficial',
-                    quantity: 1,
-                    unit_price: precioFinal,
-                    currency_id: 'ARS'
-                }],
-                back_urls: { success: 'https://comprablok.web.app' },
-                auto_return: 'approved'
-            }
-        });
-        res.json({ link: result.init_point });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
+// MOTOR TRATO: Generador de pagos automáticos
+app.post("/create_preference", async (req, res) => {
+  try {
+    const { title, price } = req.body;
+    const preference = new Preference(client);
+    const result = await preference.create({
+      body: {
+        items: [{
+          title: title || "Pago Seguro TRATO",
+          unit_price: Number(price),
+          quantity: 1,
+          currency_id: "ARS",
+        }],
+        back_urls: {
+          success: "https://comprablok-server.onrender.com/success",
+          failure: "https://comprablok-server.onrender.com/failure",
+        },
+        auto_return: "approved",
+      },
+    });
+    res.json({ init_point: result.init_point });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-// Esto sirve la web automáticamente
-app.get('/', (req, res) => { res.sendFile(__dirname + '/index.html'); });
+app.get('/', (req, res) => { res.send('MOTOR TRATO: ONLINE 🚀'); });
 
 app.listen(3000, () => {
-    console.log('\n✨ ¡TODO INTEGRADO CON ÉXITO, RICHARD! ✨');
-    console.log('🚀 MOTOR COMPRABLOK: Esperando tus ventas...');
+  console.log('\n🚀 TRATO: Motor de pagos listo!');
 });
