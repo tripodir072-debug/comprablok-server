@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 
 const client = new MercadoPagoConfig({ 
-    accessToken: 'APP_USR-3822730786979070-041707-2a6a7a0555139c12f88e5ba93b0ed401-220923936' 
+    accessToken: 'process.env.MP_ACCESS_TOKEN' 
 });
 
 app.post('/crear-venta', async (req, res) => {
