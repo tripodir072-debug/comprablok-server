@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Xupercomprabro - RichardBro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #e9ecef; padding: 20px; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 450px; margin: 40px auto; }
+        h1 { color: #009ee3; margin-bottom: 10px; }
+        .monto-label { font-size: 1.2rem; color: #555; }
+        input { width: 85%; padding: 15px; margin: 25px 0; border: 2px solid #ddd; border-radius: 12px; font-size: 22px; text-align: center; outline: none; transition: border-color 0.3s; }
+        input:focus { border-color: #009ee3; }
+        button { background-color: #009ee3; color: white; border: none; padding: 18px 35px; border-radius: 12px; font-size: 20px; cursor: pointer; width: 90%; font-weight: bold; box-shadow: 0 4px 12px rgba(0,158,227,0.3); }
+        button:hover { background-color: #007bb5; }
+        button:active { transform: scale(0.97); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🚀 RichardBro</h1>
+        <p class="monto-label">¿Cuánto es el monto de la venta?</p>
+        <input type="number" id="monto" placeholder="0.00" autofocus>
+        <button onclick="generarCobro()">CREAR VENTA AUTOMÁTICA</button>
+    </div>
+
+    <script>
+    async function generarCobro() {
+        const montoInput = document.getElementById('monto').value;
+        if (!montoInput || montoInput <= 0) { alert("Poné un monto válido, Richard."); return; }
+
+        try {
+            const respuesta = await fetch(window.location.origin + '/crear-venta', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ monto: montoInput })
+            });
+
+            const data = await respuesta.json();
+            if (data.link) { window.location.href = data.link; } 
+            else { alert("Error al conectar con Mercado Pago."); }
+        } catch (error) {
+            alert("¡Error! Fijate si la terminal negra está prendida.");
+        }
+    }
+    </script>
+</body>
+</html>
