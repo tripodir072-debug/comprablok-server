@@ -1,74 +1,20 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>TRATO - Crear Venta</title>
-    <style>
-        body { font-family: sans-serif; background: #e9ecef; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 400px; }
-        h2 { color: #28a745; text-align: center; }
-        label { font-weight: bold; display: block; margin-top: 10px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; }
-        #link-container { margin-top: 20px; display: none; padding: 15px; background: #d4edda; border-radius: 8px; border: 1px solid #c3e6cb; word-break: break-all; }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <h2>💰 Crear Nuevo Trato</h2>
-    <p>Completá los datos para generar el link de cobro seguro.</p>
+async function generarLink() {
+    // 1. Buscamos quién está logueado en el celu
+    const vendedorLogueado = localStorage.getItem('vendedor_actual') || "Invitado";
     
-    <label>Producto / Servicio</label>
-    <input type="text" id="producto" placeholder="Ej: Repuesto de motor, Manual...">
+    const titulo = document.getElementById('p').value;
+    const precio = document.getElementById('m').value;
+
+    const response = await fetch('/create_preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            title: titulo, 
+            price: precio,
+            vendedor: vendedorLogueado // <--- ESTO ES LO QUE FALTA ENVIAR
+        })
+    });
     
-    <label>Precio (ARS)</label>
-    <input type="number" id="precio" placeholder="Ej: 5000">
-    
-    <button id="btn-crear" onclick="crearTrato()">GENERAR LINK SEGURO 🚀</button>
-
-    <div id="link-container">
-        <p><b>¡Link generado!</b> Copialo y envialo al comprador:</p>
-        <a id="link-pago" href="#" target="_blank">Abrir Link de Pago</a>
-    </div>
-</div>
-
-<script>
-    async function crearTrato() {
-        const btn = document.getElementById('btn-crear');
-        const producto = document.getElementById('producto').value;
-        const precio = document.getElementById('precio').value;
-
-        if(!producto || !precio) return alert("Completá producto y precio");
-
-        btn.innerText = "Procesando...";
-        btn.disabled = true;
-
-        try {
-            const res = await fetch('https://comprablok-server.onrender.com/create_preference', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ title: producto, price: precio })
-            });
-
-            const data = await res.json();
-            
-            if(data.init_point) {
-                document.getElementById('link-container').style.display = 'block';
-                document.getElementById('link-pago').href = data.init_point;
-                document.getElementById('link-pago').innerText = data.init_point;
-                btn.innerText = "¡LINK CREADO!";
-            } else {
-                alert("Error al crear el link");
-                btn.disabled = false;
-                btn.innerText = "GENERAR LINK SEGURO 🚀";
-            }
-        } catch (e) {
-            alert("Error de conexión");
-            btn.disabled = false;
-        }
-    }
-</script>
-
-</body>
-</html>
+    const data = await response.json();
+    // ... resto de tu código para mostrar el link
+}
