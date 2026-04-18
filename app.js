@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(__dirname));
 
-// CONEXIÓN CON TU TOKEN (Asegurate que esté en Render)
+// CONEXIÓN CON TU TOKEN (Configurado en Render)
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN
 });
@@ -16,18 +16,21 @@ const client = new MercadoPagoConfig({
 app.post("/create_preference", async (req, res) => {
   try {
     const { title, price } = req.body;
-    const preference = new Preference(client);
     
+    // LÓGICA DEL 10% DE COMISIÓN
+    const montoBase = Number(price);
+    const montoFinal = montoBase * 1.10; 
+
+    const preference = new Preference(client);
     const result = await preference.create({
       body: {
         items: [{
-          id: "RB-001",
-          title: title || "Venta Oficial RICHARDBRO",
-          unit_price: Number(price),
+          id: "RB-VENTA",
+          title: (title || "Producto") + " - Protegido por RICHARDBRO",
+          unit_price: montoFinal,
           quantity: 1,
           currency_id: "ARS"
         }],
-        // AQUÍ ESTABA EL ERROR: Ahora te manda a tu propia página de éxito
         back_urls: {
           success: "https://comprablok-server.onrender.com/success.html",
           failure: "https://comprablok-server.onrender.com/vender.html",
@@ -42,6 +45,11 @@ app.post("/create_preference", async (req, res) => {
   }
 });
 
+// RUTAS PARA NAVEGAR LA APP
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
+app.get('/vender', (req, res) => { res.sendFile(path.join(__dirname, 'vender.html')); });
+app.get('/registro', (req, res) => { res.sendFile(path.join(__dirname, 'registro.html')); });
+app.get('/success', (req, res) => { res.sendFile(path.join(__dirname, 'success.html')); });
 
-app.listen(3000, () => { console.log('🚀 RICHARDBRO ONLINE'); });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => { console.log('🚀 RICHARDBRO ONLINE'); });
