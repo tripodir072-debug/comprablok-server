@@ -8,16 +8,15 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(__dirname));
 
-// CONEXIÓN CON TU TOKEN (Configurado en Render)
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN
 });
 
 app.post("/create_preference", async (req, res) => {
   try {
-    const { title, price } = req.body;
+    const { title, price, vendedor } = req.body;
     
-    // LÓGICA DEL 10% DE COMISIÓN
+    // AQUÍ EL 10% DE COMISIÓN
     const montoBase = Number(price);
     const montoFinal = montoBase * 1.10; 
 
@@ -25,8 +24,8 @@ app.post("/create_preference", async (req, res) => {
     const result = await preference.create({
       body: {
         items: [{
-          id: "RB-VENTA",
-          title: (title || "Producto") + " - Protegido por RICHARDBRO",
+          id: vendedor || "RichardBro_User", // Aquí guardamos quién hizo la venta
+          title: (title || "Producto") + " (Protegido por RICHARDBRO)",
           unit_price: montoFinal,
           quantity: 1,
           currency_id: "ARS"
@@ -45,11 +44,9 @@ app.post("/create_preference", async (req, res) => {
   }
 });
 
-// RUTAS PARA NAVEGAR LA APP
+// Rutas para que Render encuentre los archivos
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
-app.get('/vender', (req, res) => { res.sendFile(path.join(__dirname, 'vender.html')); });
-app.get('/registro', (req, res) => { res.sendFile(path.join(__dirname, 'registro.html')); });
-app.get('/success', (req, res) => { res.sendFile(path.join(__dirname, 'success.html')); });
+app.get('/login', (req, res) => { res.sendFile(path.join(__dirname, 'login.html')); });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log('🚀 RICHARDBRO ONLINE'); });
+app.listen(PORT, () => { console.log('🚀 RICHARDBRO SISTEMA DE LOGIN ONLINE'); });
