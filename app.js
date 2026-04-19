@@ -6,7 +6,9 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static(__dirname));
+
+// ESTO ES CLAVE: Le dice al servidor que busque archivos en tu carpeta principal
+app.use(express.static(path.join(__dirname, '/')));
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN
@@ -15,7 +17,7 @@ const client = new MercadoPagoConfig({
 app.post("/create_preference", async (req, res) => {
   try {
     const { title, price, vendedor } = req.body;
-    const montoFinal = Number(price) * 1.10; // Comisión del 10%
+    const montoFinal = Number(price) * 1.10; // Tu comisión del 10%
 
     const preference = new Preference(client);
     const result = await preference.create({
@@ -40,11 +42,11 @@ app.post("/create_preference", async (req, res) => {
   }
 });
 
-// ESTO ES LO QUE TE FALTABA: Las rutas para que los archivos funcionen
+// DEFINICIÓN DE RUTAS (Las llaves para entrar a cada página)
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 app.get('/login.html', (req, res) => { res.sendFile(path.join(__dirname, 'login.html')); });
 app.get('/success.html', (req, res) => { res.sendFile(path.join(__dirname, 'success.html')); });
 app.get('/vender.html', (req, res) => { res.sendFile(path.join(__dirname, 'vender.html')); });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log('🚀 RICHARDBRO ONLINE'); });
+app.listen(PORT, () => { console.log('🚀 RICHARDBRO ONLINE - PUERTAS ABIERTAS'); });
