@@ -3,20 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pago Exitoso - RICHARDBRO</title>
+    <title>Pago Protegido - TRATO</title>
     <style>
-        body { font-family: sans-serif; background: #0b0e11; color: white; text-align: center; padding-top: 100px; }
-        .card { background: #1e2329; padding: 40px; border-radius: 20px; display: inline-block; border: 1px solid #f0b90b; }
-        h1 { color: #f0b90b; }
-        .btn { display: inline-block; margin-top: 30px; padding: 15px 25px; background: #f0b90b; color: black; text-decoration: none; font-weight: bold; border-radius: 10px; }
+        :root {
+            --fb-blue: #1877F2;
+            --fb-bg: #F0F2F5;
+            --success-green: #42B72A;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--fb-bg); 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+
+        .success-card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            width: 90%; 
+            max-width: 400px; 
+            text-align: center; 
+        }
+
+        .icon-shield {
+            font-size: 60px;
+            color: var(--fb-blue);
+            margin-bottom: 15px;
+        }
+
+        .status-title {
+            color: var(--success-green);
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .transaction-id {
+            background: #f0f2f5;
+            padding: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            border-radius: 4px;
+            color: #606770;
+            margin-bottom: 20px;
+        }
+
+        .trust-message {
+            text-align: left;
+            background: #e7f3ff;
+            border-left: 5px solid var(--fb-blue);
+            padding: 15px;
+            font-size: 14px;
+            color: #1c1e21;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .qr-placeholder {
+            border: 2px dashed #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .btn-finalizar {
+            background: var(--fb-blue);
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            display: block;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-finalizar:hover { background: #166fe5; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>✅ ¡PAGO EXITOSO!</h1>
-        <p>Tu operación en <strong>RICHARDBRO</strong> se completó.</p>
-        <p>El vendedor ya tiene tu pago disponible.</p>
-        <a href="/" class="btn">VOLVER AL INICIO</a>
+
+<div class="success-card">
+    <div class="icon-shield">🛡️</div>
+    <div class="status-title">FONDOS ASEGURADOS</div>
+    
+    <div class="transaction-id">REF: TR-994206-MP</div>
+
+    <div class="trust-message">
+        <strong>Confirmación del Sistema:</strong><br>
+        El pago ha sido procesado correctamente y se encuentra bajo el <strong>Protocolo de Custodia de TRATO</strong>.<br><br>
+        El dinero será liberado al vendedor únicamente cuando escanees el código de entrega.
     </div>
+
+    <div class="qr-placeholder">
+        <p style="font-size: 12px; color: #606770;">CÓDIGO DE LIBERACIÓN</p>
+        <div style="font-size: 40px;">📱 [QR]</div>
+        <p style="font-size: 11px; margin-top: 5px; color: #999;">Muestra este código solo al recibir el producto.</p>
+    </div>
+
+    <a href="/" class="btn-finalizar">Ir a mis TRATOS</a>
+
+    <p style="font-size: 11px; color: #bcc0c4; margin-top: 20px;">
+        Operación garantizada por la infraestructura de RICHARD BRO.
+    </p>
+</div>
+
 </body>
 </html>
