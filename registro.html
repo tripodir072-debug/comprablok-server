@@ -3,41 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDBRO - Verificación</title>
+    <title>TRATO - Verificación de Seguridad</title>
     <style>
-        body { font-family: sans-serif; background: #0b0e11; color: white; display: flex; justify-content: center; padding: 20px; }
-        .card { background: #1e2329; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #474d57; }
-        h2 { color: #f0b90b; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #474d57; border-radius: 8px; background: #2b3139; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #f0b90b; color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .dni-box { border: 2px dashed #f0b90b; padding: 20px; margin: 15px 0; border-radius: 8px; color: #f0b90b; cursor: pointer; }
+        /* Paleta de Confianza Facebook/Meta */
+        :root {
+            --fb-blue: #1877F2;
+            --fb-bg: #F0F2F5;
+            --fb-gray: #606770;
+            --fb-dark: #1C1E21;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--fb-bg); 
+            color: var(--fb-dark); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+
+        h2 { color: var(--fb-blue); font-size: 24px; margin-bottom: 5px; }
+        
+        .shield-icon { font-size: 40px; margin-bottom: 10px; }
+
+        .slogan { color: var(--fb-gray); font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
+
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            margin: 10px 0; 
+            border: 1px solid #dddfe2; 
+            border-radius: 8px; 
+            background: #f5f6f7; 
+            color: var(--fb-dark); 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+
+        .dni-box { 
+            border: 2px dashed var(--fb-blue); 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            color: var(--fb-blue); 
+            cursor: pointer; 
+            background: #e7f3ff;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .dni-box:hover { background: #dbeaff; }
+
+        button { 
+            width: 100%; 
+            padding: 16px; 
+            background: var(--fb-blue); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 16px;
+            margin-top: 10px; 
+        }
+
+        button:hover { background: #166fe5; }
+
+        #preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            display: none;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .footer-info {
+            font-size: 11px;
+            color: var(--fb-gray);
+            margin-top: 20px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>🛡️ Verificación DNI</h2>
-    <p>Cargá tus datos para operar de forma segura.</p>
+    <div class="shield-icon">🛡️</div>
+    <h2>Validar Identidad</h2>
+    <p class="slogan">Para proteger tu dinero, necesitamos confirmar que eres una persona real.</p>
     
-    <input type="text" id="nombre" placeholder="Nombre y Apellido">
+    <input type="text" id="nombre" placeholder="Nombre y Apellido completo">
     <input type="number" id="dni" placeholder="Número de DNI">
     
-    <div class="dni-box" onclick="alert('Cámara activada para DNI')">
-        📸 Subir Foto de DNI (Frente)
+    <input type="file" id="fotoFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
+    
+    <div class="dni-box" onclick="document.getElementById('fotoFile').click()">
+        <img id="preview" src="#" alt="Vista previa">
+        <div id="upload-text">📸 Subir Foto de DNI (Frente)</div>
     </div>
 
-    <button onclick="enviarRegistro()">VALIDAR IDENTIDAD</button>
+    <button onclick="enviarRegistro()">ACTIVAR MI CUENTA</button>
     <br><br>
-    <a href="/" style="color: #848e9c; text-decoration: none; font-size: 14px;">← Volver al inicio</a>
+    <a href="/" style="color: var(--fb-blue); text-decoration: none; font-size: 14px; font-weight: 600;">← Volver al inicio</a>
+
+    <div class="footer-info">
+        <strong>Protocolo de Seguridad:</strong> Sus datos están encriptados y protegidos por la infraestructura de RICHARD BRO para la resolución de disputas legales.
+    </div>
 </div>
 
 <script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const output = document.getElementById('preview');
+            const text = document.getElementById('upload-text');
+            output.src = reader.result;
+            output.style.display = 'block';
+            text.style.display = 'none';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
     function enviarRegistro() {
         const nombre = document.getElementById('nombre').value;
         const dni = document.getElementById('dni').value;
-        if(!nombre || !dni) return alert("Completá los datos");
+        const foto = document.getElementById('fotoFile').files[0];
+
+        if(!nombre || !dni || !foto) {
+            return alert("Por favor, completa todos los datos y sube la foto de tu DNI.");
+        }
         
-        alert("✅ Datos enviados a revisión en RICHARDBRO. Ya podés operar.");
+        // Aquí conectas con tu lógica de Firebase que ya revisamos
+        alert("✅ Identidad enviada al sistema de TRATO. Tu cuenta ahora tiene respaldo legal.");
         window.location.href = "/";
     }
 </script>
