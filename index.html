@@ -80,8 +80,9 @@
         .btn-vender { background: var(--fb-blue); color: white; }
         .btn-vender:hover { background: #166fe5; }
 
-        .btn-seguridad { background: #e4e6eb; color: #4b4f56; }
-        .btn-seguridad:hover { background: #d8dadf; }
+        /* Estilo para cuando aún no validó */
+        .btn-validar { background: #d93025; color: white; }
+        .btn-validar:hover { background: #b21f16; }
 
         .trust-box {
             background: #f0f2f5;
@@ -105,14 +106,13 @@
 
 <div class="container">
     <div class="logo">TRATO</div>
-    <div class="status-badge">🛡️ Protocolo de Custodia Activo</div>
+    <div id="badge-estado" class="status-badge">🛡️ Protocolo de Custodia Activo</div>
     
-    <div class="slogan">
+    <div id="texto-instruccion" class="slogan">
         El dinero de tu compra queda protegido en nuestro sistema hasta que recibas el producto.
     </div>
 
-    <button onclick="validarAcceso('/vender.html')" class="menu-btn btn-vender">Comenzar Transacción Segura</button>
-    <button onclick="window.location.href='/registro.html'" class="menu-btn btn-seguridad">Verificar mi Identidad (DNI)</button>
+    <div id="boton-principal"></div>
     
     <div class="trust-box">
         <strong>Seguridad Automatizada:</strong><br>
@@ -126,19 +126,31 @@
 </div>
 
 <script>
-    function validarAcceso(urlDestino) {
-        // Buscamos la marca de validación en el almacenamiento del navegador
+    function cargarInterfaz() {
         const estaValidado = localStorage.getItem('dni_verificado');
+        const contenedor = document.getElementById('boton-principal');
+        const badge = document.getElementById('badge-estado');
+        const instruccion = document.getElementById('texto-instruccion');
 
         if (estaValidado === 'true') {
-            // Si el usuario ya cargó su DNI, lo dejamos pasar
-            window.location.href = urlDestino;
+            // Si ya está validado, mostramos el botón de vender
+            contenedor.innerHTML = `<button onclick="window.location.href='/vender.html'" class="menu-btn btn-vender">Comenzar Transacción Segura</button>`;
+            badge.style.background = "#e7f3ff";
+            badge.style.color = "#1877f2";
+            badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
         } else {
-            // Si no está validado, cartel de alerta y redirección forzosa
-            alert("🔒 SEGURIDAD: Debes verificar tu identidad con DNI antes de realizar transacciones.");
-            window.location.href = "/registro.html";
+            // Si NO está validado, mostramos SOLAMENTE el botón de validar
+            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad, primero debes validar tu identidad con tu DNI.";
+            badge.style.background = "#ffebe9";
+            badge.style.color = "#d93025";
+            badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
+            
+            contenedor.innerHTML = `<button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>`;
         }
     }
+
+    // Ejecutar al cargar la página
+    window.onload = cargarInterfaz;
 </script>
 
 </body>
