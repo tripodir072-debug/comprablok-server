@@ -1,42 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRATO - Crear Venta</title>
-    <style>
-        :root { --fb-blue: #1877F2; --fb-bg: #F0F2F5; }
-        body { font-family: -apple-system, sans-serif; background: var(--fb-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 16px; background: var(--fb-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .footer-brand { margin-top: 20px; font-size: 12px; color: #606770; }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <h2 style="color: var(--fb-blue);">Nueva Venta Segura</h2>
-    <p style="font-size: 14px; color: #606770;">Generá un link de pago con custodia automática.</p>
-    
-    <input type="text" id="p" placeholder="¿Qué estás vendiendo?">
-    <input type="number" id="m" placeholder="Monto total (AR$)">
-    
-    <button onclick="generarLink()">GENERAR LINK PROTEGIDO</button>
-
-    <div id="resultado-pago"></div>
-
-    <div class="footer-brand">
-        Powered by RICHARD BRO <br>
-        Infraestructura de Pagos Argentina
-    </div>
-</div>
-
 <script>
     async function generarLink() {
-        // 1. Buscamos quién está logueado
         const vendedorLogueado = localStorage.getItem('vendedor_actual') || "Invitado";
-        
         const titulo = document.getElementById('p').value;
         const precio = document.getElementById('m').value;
 
@@ -59,14 +23,22 @@
             const data = await response.json();
 
             if (data.init_point) {
-                // Mostramos el resultado con estética profesional
                 const contenedor = document.getElementById('resultado-pago'); 
+                const linkFinal = data.init_point;
+                const textoWA = encodeURIComponent(`Hola! Te paso el link de pago protegido por TRATO para "${titulo}". El dinero queda en custodia hasta que reciba el producto: ${linkFinal}`);
+
+                // Solo agregamos los botones de compartir y copiar
                 contenedor.innerHTML = `
-                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #1877F2;">
-                        <p style="color: #1c1e21; font-weight: bold; font-size: 13px; margin-bottom: 10px;">🛡️ LINK DE CUSTODIA LISTO</p>
-                        <a href="${data.init_point}" target="_blank" style="background: #1877F2; color: white; text-decoration: none; padding: 12px; display: block; border-radius: 6px; font-weight: bold; font-size: 14px;">
-                            ENVIAR AL COMPRADOR
+                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #1877F2; text-align: center;">
+                        <p style="color: #1c1e21; font-weight: bold; font-size: 13px; margin-bottom: 12px;">🛡️ LINK DE CUSTODIA GENERADO</p>
+                        
+                        <a href="https://wa.me/?text=${textoWA}" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 12px; display: block; border-radius: 6px; font-weight: bold; font-size: 14px; margin-bottom: 10px;">
+                            COMPARTIR POR WHATSAPP 📱
                         </a>
+
+                        <button onclick="copiarLink('${linkFinal}')" style="background: #1877F2; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px;">
+                            COPIAR LINK MANUAL 📋
+                        </button>
                     </div>
                 `;
             } else {
@@ -74,10 +46,14 @@
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("Error en el servidor. Verifica que Render esté encendido.");
+            alert("Error en el servidor.");
         }
     }
-</script>
 
-</body>
-</html>
+    // Función extra para que el botón de copiar funcione
+    function copiarLink(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert("✅ Link copiado al portapapeles");
+        });
+    }
+</script>
