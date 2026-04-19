@@ -1,3 +1,4 @@
+<script>
 async function generarLink() {
     // 1. Buscamos quién está logueado en el celu
     const vendedorLogueado = localStorage.getItem('vendedor_actual') || "Invitado";
@@ -5,16 +6,31 @@ async function generarLink() {
     const titulo = document.getElementById('p').value;
     const precio = document.getElementById('m').value;
 
+    if(!titulo || !precio) return alert("Por favor, completa título y monto.");
+
     const response = await fetch('/create_preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
             title: titulo, 
             price: precio,
-            vendedor: vendedorLogueado // <--- ESTO ES LO QUE FALTA ENVIAR
+            vendedor: vendedorLogueado 
         })
     });
     
     const data = await response.json();
-    // ... resto de tu código para mostrar el link
+
+    if (data.init_point) {
+        // Mostramos el link de pago con estética TRATO
+        const contenedor = document.getElementById('resultado-pago'); 
+        contenedor.innerHTML = `
+            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #1877F2;">
+                <p style="color: #1c1e21; font-weight: bold; margin-bottom: 10px;">🛡️ Link de Pago Protegido Generado</p>
+                <a href="${data.init_point}" target="_blank" style="background: #1877F2; color: white; text-decoration: none; padding: 12px; display: block; border-radius: 6px; text-align: center; font-weight: bold;">
+                    ENVIAR LINK AL COMPRADOR
+                </a>
+            </div>
+        `;
+    }
 }
+</script>
