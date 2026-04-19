@@ -3,37 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDBRO - TRATO Seguro</title>
+    <title>TRATO - Sistema de Custodia Seguro</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0b0e11; color: white; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { text-align: center; padding: 20px; width: 100%; max-width: 400px; }
-        .logo { font-size: 32px; font-weight: bold; color: #f0b90b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        .slogan { color: #848e9c; margin-bottom: 30px; font-size: 14px; }
-        .menu-btn { 
-            display: block; width: 100%; padding: 20px; margin: 15px 0; 
-            border-radius: 12px; border: none; font-size: 18px; font-weight: bold; 
-            cursor: pointer; transition: 0.3s; text-decoration: none;
+        /* Cambiamos a la paleta de confianza de Facebook/Meta */
+        :root {
+            --fb-blue: #1877F2;
+            --fb-bg: #F0F2F5;
+            --fb-dark: #1C1E21;
+            --fb-gray: #606770;
+            --success-green: #42B72A;
         }
-        .btn-vender { background: #f0b90b; color: black; }
-        .btn-vender:hover { background: #d9a508; }
-        .btn-seguridad { background: #2b3139; color: white; border: 1px solid #474d57; }
-        .btn-seguridad:hover { background: #3e4650; }
-        .footer { margin-top: 40px; font-size: 12px; color: #474d57; }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--fb-bg); 
+            color: var(--fb-dark); 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+        }
+
+        .container { 
+            text-align: center; 
+            padding: 25px; 
+            width: 90%; 
+            max-width: 420px; 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo { 
+            font-size: 28px; 
+            font-weight: 800; 
+            color: var(--fb-blue); 
+            margin-bottom: 5px; 
+            letter-spacing: -0.5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #E7F3FF;
+            color: var(--fb-blue);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .slogan { 
+            color: var(--fb-gray); 
+            margin-bottom: 25px; 
+            font-size: 15px; 
+            line-height: 1.4;
+        }
+
+        .menu-btn { 
+            display: block; 
+            width: 100%; 
+            padding: 16px 0; 
+            margin: 12px 0; 
+            border-radius: 8px; 
+            border: none; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        /* Botón principal azul Facebook */
+        .btn-vender { 
+            background: var(--fb-blue); 
+            color: white; 
+        }
+        .btn-vender:hover { background: #166fe5; }
+
+        /* Botón secundario suave */
+        .btn-seguridad { 
+            background: #e4e6eb; 
+            color: #4b4f56; 
+        }
+        .btn-seguridad:hover { background: #d8dadf; }
+
+        .trust-box {
+            background: #f0f2f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #1c1e21;
+            margin-top: 20px;
+            border-left: 4px solid var(--fb-blue);
+            text-align: left;
+        }
+
+        .footer { 
+            margin-top: 30px; 
+            font-size: 12px; 
+            color: var(--fb-gray); 
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="logo">RICHARDBRO</div>
-    <div class="slogan">Seguridad en cada TRATO 🤝</div>
+    <div class="logo">TRATO</div>
+    <div class="status-badge">🛡️ Protocolo de Custodia Activo</div>
+    
+    <div class="slogan">
+        El dinero de tu compra queda protegido en nuestro sistema hasta que recibas el producto.
+    </div>
 
-    <a href="/vender.html" class="menu-btn btn-vender">💰 CREAR NUEVA VENTA</a>
+    <a href="/vender.html" class="menu-btn btn-vender">Comenzar Transacción Segura</a>
+    <a href="/registro.html" class="menu-btn btn-seguridad">Verificar mi Identidad (DNI)</a>
     
-    <a href="/registro.html" class="menu-btn btn-seguridad">🛡️ VERIFICAR MI DNI</a>
-    
+    <div class="trust-box">
+        <strong>Seguridad Automatizada:</strong><br>
+        Al operar con TRATO, los fondos son retenidos por software. La liberación del pago solo es posible mediante escaneo de QR mutuo.
+    </div>
+
     <div class="footer">
-        © 2026 RICHARDBRO - Argentina<br>
-        Transacciones Protegidas
+        © 2026 TRATO by RICHARD BRO<br>
+        Infraestructura de Pagos Argentina
     </div>
 </div>
 
