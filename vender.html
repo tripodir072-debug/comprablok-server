@@ -1,55 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRATO - Crear Venta</title>
-    <style>
-        :root { --fb-blue: #1877F2; --fb-bg: #F0F2F5; }
-        body { font-family: -apple-system, sans-serif; background: var(--fb-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 16px; background: var(--fb-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .footer-brand { margin-top: 20px; font-size: 12px; color: #606770; }
-        /* Estilo para el ID visible */
-        .id-badge { background: #e7f3ff; color: #1877f2; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-family: monospace; }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <h2 style="color: var(--fb-blue);">Nueva Venta Segura</h2>
-    <p style="font-size: 14px; color: #606770;">Operación: <span id="id-visible" class="id-badge">Cargando...</span></p>
-    
-    <input type="text" id="p" placeholder="¿Qué estás vendiendo?">
-    <input type="number" id="m" placeholder="Monto total (AR$)">
-    
-    <button onclick="generarLink()">GENERAR LINK PROTEGIDO</button>
-
-    <div id="resultado-pago"></div>
-
-    <div class="footer-brand">
-        Powered by RICHARD BRO <br>
-        Infraestructura de Pagos Argentina
-    </div>
-</div>
-
 <script>
     // --- LÓGICA DE ID ---
     const urlParams = new URLSearchParams(window.location.search);
-    // Buscamos el ID que viene del index.html
     const idDelTrato = urlParams.get('trato_id') || localStorage.getItem('ultimo_id_generado') || "TR-PENDIENTE";
     document.getElementById('id-visible').innerText = idDelTrato;
 
-    // --- CANDADO DE SEGURIDAD ---
+    // --- CANDADO DE SEGURIDAD REFORZADO ---
     if (localStorage.getItem('dni_verificado') !== 'true') {
         alert("🔒 Acceso Denegado: Debes validar tu identidad para crear ventas.");
         window.location.href = "/registro.html";
     }
 
     async function generarLink() {
+        const btnGenerar = document.querySelector('button');
+        const divResultado = document.getElementById('resultado-pago');
+
         try {
-            const vendedorLogueado = localStorage.getItem('vendedor_actual') || "Vendedor TRATO";
+            const vendedorLogueado = localStorage.getItem('vendedor_actual') || "Vendedor Richard Bro";
             const titulo = document.getElementById('p').value;
             const precio = document.getElementById('m').value;
 
@@ -58,15 +24,18 @@
                 return;
             }
 
-            // Enviamos el 'idDelTrato' al servidor para guardarlo con la transacción
+            btnGenerar.innerText = "⏳ GENERANDO LINK...";
+            btnGenerar.disabled = true;
+
+            // Enviamos los datos al servidor de Render
             const response = await fetch('/create_preference', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     title: titulo, 
-                    price: precio, 
+                    price: parseFloat(precio), 
                     vendedor: vendedorLogueado,
-                    trato_id: idDelTrato // <--- ESTO CONECTA TODO EL SISTEMA
+                    external_reference: idDelTrato // <--- Mercado Pago usa este nombre para el ID
                 })
             });
             
@@ -74,37 +43,31 @@
 
             if (data.init_point) {
                 const linkFinal = data.init_point;
-                // Agregamos el ID al mensaje de WhatsApp para que el comprador lo vea
-                const textoWA = `Hola! Te paso el link de pago para "${titulo}".\nOperación: ${idDelTrato}\nLink Seguro: ${linkFinal}`;
+                // Mensaje de WhatsApp bien vendedor y profesional
+                const textoWA = `🛡️ PAGO SEGURO - TRATO\n\nHola! Te envío el link de pago protegido para: *${titulo}*.\n\n✅ Operación: ${idDelTrato}\n✅ Monto: $${precio}\n\nLink de pago: ${linkFinal}\n\n*La plata queda en custodia de RICHARD BRO hasta que recibas el producto.*`;
                 const urlWA = "https://wa.me/?text=" + encodeURIComponent(textoWA);
 
-                const contenedor = document.getElementById('resultado-pago'); 
-                
-                let htmlBotones = '<div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #1877F2; text-align: center;">';
-                htmlBotones += '<p style="color: #1c1e21; font-weight: bold; font-size: 13px; margin-bottom: 12px;">🛡️ LINK DE CUSTODIA GENERADO</p>';
-                htmlBotones += '<a href="' + urlWA + '" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 12px; display: block; border-radius: 6px; font-weight: bold; font-size: 14px; margin-bottom: 10px;">COMPARTIR POR WHATSAPP 📱</a>';
-                htmlBotones += '<button onclick="copiarLink(\'' + linkFinal + '\')" style="background: #1877F2; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px;">COPIAR LINK MANUAL 📋</button>';
-                htmlBotones += '</div>';
-
-                contenedor.innerHTML = htmlBotones;
+                divResultado.innerHTML = `
+                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #1877F2; text-align: center;">
+                        <p style="color: #1c1e21; font-weight: bold; font-size: 13px; margin-bottom: 12px;">🛡️ LINK DE CUSTODIA GENERADO</p>
+                        <a href="${urlWA}" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 12px; display: block; border-radius: 6px; font-weight: bold; font-size: 14px; margin-bottom: 10px;">ENVIAR POR WHATSAPP 📱</a>
+                        <button onclick="copiarLink('${linkFinal}')" style="background: #1877F2; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px;">COPIAR LINK MANUAL 📋</button>
+                    </div>
+                `;
             } else {
-                alert("Error de Mercado Pago.");
+                alert("Error al generar preferencia.");
             }
         } catch (error) {
-            alert("Error en el servidor.");
+            alert("Error en el servidor de Render.");
+        } finally {
+            btnGenerar.innerText = "GENERAR LINK PROTEGIDO";
+            btnGenerar.disabled = false;
         }
     }
 
     function copiarLink(url) {
-        const tempInput = document.createElement("input");
-        document.body.appendChild(tempInput);
-        tempInput.value = url;
-        tempInput.select();
-        document.execCommand("copy");
-        document.body.removeChild(tempInput);
-        alert("✅ Link copiado");
+        navigator.clipboard.writeText(url).then(() => {
+            alert("✅ Link copiado al portapapeles");
+        });
     }
 </script>
-
-</body>
-</html>
