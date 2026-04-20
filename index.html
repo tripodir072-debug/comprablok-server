@@ -6,27 +6,28 @@
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
 
+        // SEGURIDAD: Si por algún motivo los elementos no cargaron, evitamos que la pantalla rompa
+        if (!contenedor || !badge || !instruccion) return;
+
         // Limpiamos el contenedor para que no quede nada de sesiones viejas
         contenedor.innerHTML = "";
 
         if (estaValidado === 'true') {
-            // PANTALLA 2: TODO VERIFICADO (Como la imagen 9143)
+            // PANTALLA 2: TODO VERIFICADO
             const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
             
-            badge.className = "status-badge"; // Estilo azul por defecto
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
             badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
             instruccion.innerHTML = "El dinero de tu compra queda protegido en nuestro sistema hasta que recibas el producto.";
             
-            // Inyectamos ambos botones solo aquí
+            // Inyectamos ambos botones
             contenedor.innerHTML = `
                 <button onclick="nuevoTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
                 <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
             `;
         } else {
-            // PANTALLA 1: BLOQUEO TOTAL (Como la imagen 8973)
-            badge.className = "status-badge";
+            // PANTALLA 1: BLOQUEO TOTAL
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
@@ -52,5 +53,6 @@
         }
     }
 
-    window.onload = cargarInterfaz;
+    // CAMBIO CLAVE: Usamos DOMContentLoaded para que no quede en blanco
+    document.addEventListener("DOMContentLoaded", cargarInterfaz);
 </script>
