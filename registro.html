@@ -1,59 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Identidad - TRATO</title>
+    <style>
+        :root { --fb-blue: #1877F2; --fb-bg: #F0F2F5; --fb-gray: #606770; }
+        body { font-family: -apple-system, sans-serif; background: var(--fb-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        h2 { color: var(--fb-blue); margin-bottom: 10px; font-size: 22px; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .dni-box { border: 2px dashed var(--fb-blue); padding: 20px; margin: 15px 0; border-radius: 8px; color: var(--fb-blue); cursor: pointer; background: #e7f3ff; font-weight: bold; position: relative; }
+        #preview { width: 100%; max-height: 200px; object-fit: contain; display: none; margin-bottom: 15px; border-radius: 8px; }
+        .btn-activar { width: 100%; padding: 16px; background: var(--fb-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .footer-text { font-size: 12px; color: var(--fb-gray); margin-top: 20px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div style="font-size: 40px; margin-bottom: 10px;">🛡️</div>
+    <h2>Validar Identidad</h2>
+    <p style="color: var(--fb-gray); font-size: 14px; margin-bottom: 20px;">
+        Para operar en <strong>RICHARD BRO</strong>, necesitamos verificar que sos una persona real.
+    </p>
+    
+    <input type="text" id="nombre" placeholder="Nombre y Apellido completo">
+    <input type="number" id="dni" placeholder="Número de DNI (sin puntos)">
+    
+    <input type="file" id="fotoFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
+    
+    <div class="dni-box" onclick="document.getElementById('fotoFile').click()">
+        <img id="preview" src="#" alt="Vista previa">
+        <div id="upload-text">📸 Tocar para subir foto de DNI (Frente)</div>
+    </div>
+
+    <button class="btn-activar" onclick="validarYActivar()">ACTIVAR MI CUENTA SEGURA</button>
+    
+    <p class="footer-text">
+        Tus datos están protegidos por el protocolo de seguridad de RICHARD BRO Argentina.
+    </p>
+    
+    <a href="index.html" style="color: var(--fb-blue); text-decoration: none; font-size: 13px; display: block; margin-top: 15px;">← Volver</a>
+</div>
+
 <script>
-    function cargarInterfaz() {
-        const contenedor = document.getElementById('contenedor-botones');
-        const badge = document.getElementById('badge-estado');
-        const instruccion = document.getElementById('texto-instruccion');
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const output = document.getElementById('preview');
+                const text = document.getElementById('upload-text');
+                output.src = reader.result;
+                output.style.display = 'block';
+                text.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function validarYActivar() {
+        const nombre = document.getElementById('nombre').value.trim();
+        const dni = document.getElementById('dni').value.trim();
+        const foto = document.getElementById('fotoFile').files[0];
+
+        if(!nombre || !dni || !foto) {
+            return alert("⚠️ Por favor, completá tu nombre, DNI y subí la foto del frente de tu documento.");
+        }
         
-        // 1. Si los elementos no están listos, esperamos un poquito y reintentamos
-        if (!contenedor || !badge || !instruccion) {
-            setTimeout(cargarInterfaz, 10); 
-            return;
-        }
+        // 1. Guardamos los datos en el sistema local
+        localStorage.setItem('vendedor_actual', nombre);
+        localStorage.setItem('dni_vendedor', dni);
+        
+        // 2. ACTIVAMOS LA LLAVE (Esto es lo que lee el Index)
+        localStorage.setItem('dni_verificado', 'true');
 
-        // 2. Leemos la validación
-        const estaValidado = localStorage.getItem('dni_verificado') === 'true';
-
-        // 3. Limpiamos para evitar duplicados
-        contenedor.innerHTML = "";
-
-        if (estaValidado) {
-            // PANTALLA AZUL: VERIFICADO
-            const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
-            badge.style.background = "#e7f3ff";
-            badge.style.color = "#1877f2";
-            badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
-            instruccion.innerHTML = "Tu cuenta está activa. Ya puedes iniciar ventas seguras con custodia.";
-            
-            contenedor.innerHTML = `
-                <button onclick="nuevoTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
-                <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
-            `;
-        } else {
-            // PANTALLA ROJA: BLOQUEO (Como pediste, Richard)
-            badge.style.background = "#ffebe9";
-            badge.style.color = "#d93025";
-            badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
-            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad, primero debes validar tu identidad con tu DNI.";
-            contenedor.innerHTML = `<button onclick="window.location.href='registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>`;
-        }
-    }
-
-    function nuevoTrato(id) {
-        localStorage.setItem('ultimo_id_generado', id);
-        window.location.href = "vender.html?trato_id=" + id;
-    }
-
-    function solicitarCobro() {
-        const idVenta = prompt("Ingrese el ID de la operación (Ej: TR-123456):");
-        if (idVenta) {
-            window.location.href = "https://wa.me/543456528480?text=" + encodeURIComponent("Hola! Solicito cobrar mi venta ID: " + idVenta);
-        }
-    }
-
-    // DISPARO DE SEGURIDAD: Ejecuta apenas el navegador tiene el DOM listo
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-        cargarInterfaz();
-    } else {
-        document.addEventListener("DOMContentLoaded", cargarInterfaz);
+        alert("✅ ¡Identidad Validada! Tu cuenta ha sido activada correctamente.");
+        
+        // 3. Volvemos al inicio para ver los botones de venta
+        window.location.href = "index.html";
     }
 </script>
+
+</body>
+</html>
