@@ -3,72 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRATO - Verificación de Identidad</title>
+    <title>TRATO - Sistema de Custodia Seguro</title>
     <style>
-        :root { --fb-blue: #1877F2; --fb-bg: #F0F2F5; --fb-gray: #606770; }
-        body { font-family: -apple-system, sans-serif; background: var(--fb-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-        h2 { color: var(--fb-blue); margin-bottom: 10px; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .dni-box { border: 2px dashed var(--fb-blue); padding: 20px; margin: 15px 0; border-radius: 8px; color: var(--fb-blue); cursor: pointer; background: #e7f3ff; font-weight: bold; }
-        #preview { width: 100%; max-height: 200px; object-fit: contain; display: none; margin-bottom: 15px; border-radius: 8px; }
-        button { width: 100%; padding: 16px; background: var(--fb-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        :root { --fb-blue: #1877F2; --fb-bg: #F0F2F5; --fb-dark: #1C1E21; --fb-gray: #606770; --wa-green: #25D366; }
+        body { font-family: -apple-system, sans-serif; background: var(--fb-bg); color: var(--fb-dark); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { text-align: center; padding: 25px; width: 90%; max-width: 420px; background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        .logo { font-size: 28px; font-weight: 800; color: var(--fb-blue); margin-bottom: 5px; }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
+        .slogan { color: var(--fb-gray); margin-bottom: 25px; font-size: 15px; line-height: 1.4; }
+        .menu-btn { display: block; width: 100%; padding: 16px 0; margin: 12px 0; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
+        .btn-vender { background: var(--fb-blue); color: white; }
+        .btn-validar { background: #d93025; color: white; }
+        .btn-cobrar { background: var(--wa-green); color: white; border-bottom: 3px solid #1ebe57; }
+        .trust-box { background: #f0f2f5; padding: 15px; border-radius: 8px; font-size: 13px; margin-top: 20px; border-left: 4px solid var(--fb-blue); text-align: left; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div style="font-size: 40px;">🛡️</div>
-    <h2>Validar Identidad</h2>
-    <p style="color: var(--fb-gray); font-size: 14px; margin-bottom: 20px;">Subí tu DNI para habilitar tu cuenta segura.</p>
-    
-    <input type="text" id="nombre" placeholder="Nombre y Apellido completo">
-    <input type="number" id="dni" placeholder="Número de DNI">
-    
-    <input type="file" id="fotoFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
-    
-    <div class="dni-box" onclick="document.getElementById('fotoFile').click()">
-        <img id="preview" src="#" alt="Vista previa">
-        <div id="upload-text">📸 Subir Foto de DNI (Frente)</div>
-    </div>
+<div class="container">
+    <div class="logo">TRATO</div>
+    <div id="badge-estado" class="status-badge">Iniciando...</div>
+    <div id="texto-instruccion" class="slogan">Cargando sistema de seguridad...</div>
 
-    <button onclick="enviarRegistro()">ACTIVAR MI CUENTA</button>
-    <br><br>
-    <a href="/" style="color: var(--fb-blue); text-decoration: none; font-size: 14px;">← Volver al inicio</a>
+    <div id="contenedor-botones"></div>
+    
+    <div class="trust-box">
+        <strong>Control de Seguridad:</strong><br>
+        Cada operación genera un ID único. No entregues nada sin el cartel de "FONDOS ASEGURADOS".
+    </div>
 </div>
 
 <script>
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(){
-                const output = document.getElementById('preview');
-                const text = document.getElementById('upload-text');
-                output.src = reader.result;
-                output.style.display = 'block';
-                text.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+    function cargarInterfaz() {
+        const contenedor = document.getElementById('contenedor-botones');
+        const badge = document.getElementById('badge-estado');
+        const instruccion = document.getElementById('texto-instruccion');
+        const estaValidado = localStorage.getItem('dni_verificado');
+
+        // SI NO ENCUENTRA LOS DIVS, REINTENTA EN 100ms (Evita pantalla en blanco)
+        if (!contenedor || !badge || !instruccion) {
+            setTimeout(cargarInterfaz, 100);
+            return;
+        }
+
+        contenedor.innerHTML = "";
+
+        if (estaValidado === 'true') {
+            const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
+            badge.style.background = "#e7f3ff";
+            badge.style.color = "#1877f2";
+            badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
+            instruccion.innerHTML = "Tu cuenta está activa. Ya puedes iniciar ventas seguras con custodia.";
+            
+            contenedor.innerHTML = `
+                <button onclick="nuevoTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
+                <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
+            `;
+        } else {
+            badge.style.background = "#ffebe9";
+            badge.style.color = "#d93025";
+            badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
+            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad, primero debes validar tu identidad con tu DNI.";
+            contenedor.innerHTML = `<button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>`;
         }
     }
 
-    function enviarRegistro() {
-        const nombre = document.getElementById('nombre').value;
-        const dni = document.getElementById('dni').value;
-        const foto = document.getElementById('fotoFile').files[0];
-
-        if(!nombre || !dni || !foto) {
-            return alert("Por favor, completa todos los datos y sube la foto de tu DNI.");
-        }
-        
-        // Guardamos la llave de validación
-        localStorage.setItem('dni_verificado', 'true');
-        localStorage.setItem('vendedor_actual', nombre);
-
-        alert("✅ Identidad validada correctamente.");
-        window.location.href = "/"; // Volver al index para ver el botón azul
+    function nuevoTrato(id) {
+        alert("✅ ID GENERADO: " + id + "\n\nGuardalo para que el vendedor pueda cobrar.");
+        localStorage.setItem('ultimo_id_generado', id);
+        window.location.href = `/vender.html?trato_id=${id}`;
     }
+
+    function solicitarCobro() {
+        const idVenta = prompt("Ingrese el ID de la operación (Ej: TR-123456):");
+        if (idVenta) {
+            window.location.href = `https://wa.me/543456528480?text=Hola! Solicito cobrar mi venta ID: ${idVenta}`;
+        }
+    }
+
+    // Ejecutar al cargar
+    document.addEventListener("DOMContentLoaded", cargarInterfaz);
 </script>
 
 </body>
