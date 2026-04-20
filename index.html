@@ -1,19 +1,19 @@
 <script>
     function cargarInterfaz() {
-        // 1. Buscamos la validación
-        const estaValidado = localStorage.getItem('dni_verificado');
+        // Buscamos los elementos con cuidado
         const contenedor = document.getElementById('contenedor-botones');
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
+        const estaValidado = localStorage.getItem('dni_verificado');
 
-        // SEGURIDAD: Si por algún motivo los elementos no cargaron, evitamos que la pantalla rompa
+        // Si el HTML todavía no cargó los IDs, salimos para no romper la pantalla
         if (!contenedor || !badge || !instruccion) return;
 
-        // Limpiamos el contenedor para que no quede nada de sesiones viejas
+        // Limpiamos lo que haya
         contenedor.innerHTML = "";
 
         if (estaValidado === 'true') {
-            // PANTALLA 2: TODO VERIFICADO
+            // PANTALLA 2: TODO VERIFICADO (Como la imagen 9143)
             const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
             
             badge.style.background = "#e7f3ff";
@@ -21,19 +21,17 @@
             badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
             instruccion.innerHTML = "El dinero de tu compra queda protegido en nuestro sistema hasta que recibas el producto.";
             
-            // Inyectamos ambos botones
             contenedor.innerHTML = `
                 <button onclick="nuevoTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
                 <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
             `;
         } else {
-            // PANTALLA 1: BLOQUEO TOTAL
+            // PANTALLA 1: BLOQUEO TOTAL (Como la imagen 8973)
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
             instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad, primero debes validar tu identidad con tu DNI.";
             
-            // Solo mostramos el botón rojo de validar
             contenedor.innerHTML = `<button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>`;
         }
     }
@@ -53,6 +51,11 @@
         }
     }
 
-    // CAMBIO CLAVE: Usamos DOMContentLoaded para que no quede en blanco
-    document.addEventListener("DOMContentLoaded", cargarInterfaz);
+    // ESTO ARREGLA LA PANTALLA EN BLANCO:
+    // Le dice al código que se ejecute recién cuando el HTML esté totalmente dibujado
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        cargarInterfaz();
+    } else {
+        document.addEventListener("DOMContentLoaded", cargarInterfaz);
+    }
 </script>
