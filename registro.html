@@ -1,53 +1,23 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRATO - Sistema de Custodia Seguro</title>
-    <style>
-        :root { --fb-blue: #1877F2; --fb-bg: #F0F2F5; --fb-dark: #1C1E21; --fb-gray: #606770; --wa-green: #25D366; }
-        body { font-family: -apple-system, sans-serif; background: var(--fb-bg); color: var(--fb-dark); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { text-align: center; padding: 25px; width: 90%; max-width: 420px; background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-        .logo { font-size: 28px; font-weight: 800; color: var(--fb-blue); margin-bottom: 5px; }
-        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
-        .slogan { color: var(--fb-gray); margin-bottom: 25px; font-size: 15px; line-height: 1.4; }
-        .menu-btn { display: block; width: 100%; padding: 16px 0; margin: 12px 0; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
-        .btn-vender { background: var(--fb-blue); color: white; }
-        .btn-validar { background: #d93025; color: white; }
-        .btn-cobrar { background: var(--wa-green); color: white; border-bottom: 3px solid #1ebe57; }
-        .trust-box { background: #f0f2f5; padding: 15px; border-radius: 8px; font-size: 13px; margin-top: 20px; border-left: 4px solid var(--fb-blue); text-align: left; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="logo">TRATO</div>
-    <div id="badge-estado" class="status-badge">Iniciando...</div>
-    <div id="texto-instruccion" class="slogan">Cargando...</div>
-
-    <div id="contenedor-botones"></div>
-    
-    <div class="trust-box">
-        <strong>Control de Seguridad:</strong><br>
-        Cada operación genera un ID único. No entregues nada sin el cartel de "FONDOS ASEGURADOS".
-    </div>
-</div>
-
 <script>
     function cargarInterfaz() {
         const contenedor = document.getElementById('contenedor-botones');
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
         
-        // Verificamos si los elementos existen en el DOM
-        if (!contenedor || !badge || !instruccion) return;
+        // 1. Si los elementos no están listos, esperamos un poquito y reintentamos
+        if (!contenedor || !badge || !instruccion) {
+            setTimeout(cargarInterfaz, 10); 
+            return;
+        }
 
-        // Leemos el estado (si es null o undefined, lo tratamos como 'false')
+        // 2. Leemos la validación
         const estaValidado = localStorage.getItem('dni_verificado') === 'true';
 
+        // 3. Limpiamos para evitar duplicados
         contenedor.innerHTML = "";
 
         if (estaValidado) {
+            // PANTALLA AZUL: VERIFICADO
             const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
@@ -59,17 +29,18 @@
                 <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
             `;
         } else {
+            // PANTALLA ROJA: BLOQUEO (Como pediste, Richard)
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
             instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad, primero debes validar tu identidad con tu DNI.";
-            contenedor.innerHTML = `<button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>`;
+            contenedor.innerHTML = `<button onclick="window.location.href='registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>`;
         }
     }
 
     function nuevoTrato(id) {
         localStorage.setItem('ultimo_id_generado', id);
-        window.location.href = "/vender.html?trato_id=" + id;
+        window.location.href = "vender.html?trato_id=" + id;
     }
 
     function solicitarCobro() {
@@ -79,10 +50,10 @@
         }
     }
 
-    // DISPARO INMEDIATO Y DE RESPALDO
-    cargarInterfaz();
-    window.onload = cargarInterfaz;
+    // DISPARO DE SEGURIDAD: Ejecuta apenas el navegador tiene el DOM listo
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        cargarInterfaz();
+    } else {
+        document.addEventListener("DOMContentLoaded", cargarInterfaz);
+    }
 </script>
-
-</body>
-</html>
