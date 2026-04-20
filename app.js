@@ -16,7 +16,8 @@ const client = new MercadoPagoConfig({
 
 app.post("/create_preference", async (req, res) => {
   try {
-    const { title, price, vendedor } = req.body;
+    // Agregamos 'trato_id' para recibirlo desde el frontend
+    const { title, price, vendedor, trato_id } = req.body;
     const montoFinal = Number(price) * 1.10; // Tu comisión del 10%
 
     const preference = new Preference(client);
@@ -29,6 +30,8 @@ app.post("/create_preference", async (req, res) => {
           quantity: 1,
           currency_id: "ARS"
         }],
+        // ESTA LÍNEA ES LA MAGIA: Guarda tu ID de control en Mercado Pago
+        external_reference: trato_id || "TR-SIN-ID",
         back_urls: {
           success: "https://comprablok-server.onrender.com/success.html",
           failure: "https://comprablok-server.onrender.com/vender.html",
