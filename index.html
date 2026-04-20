@@ -1,24 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRATO - Sistema de Custodia Seguro</title>
+    <style>
+        :root {
+            --fb-blue: #1877F2; --fb-bg: #F0F2F5; --fb-dark: #1C1E21;
+            --fb-gray: #606770; --wa-green: #25D366;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--fb-bg); color: var(--fb-dark); margin: 0; 
+            display: flex; justify-content: center; align-items: center; height: 100vh; 
+        }
+
+        .container { 
+            text-align: center; padding: 25px; width: 90%; max-width: 420px; 
+            background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo { font-size: 28px; font-weight: 800; color: var(--fb-blue); margin-bottom: 5px; letter-spacing: -0.5px;}
+
+        .status-badge {
+            display: inline-block; padding: 6px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase;
+        }
+
+        .slogan { color: var(--fb-gray); margin-bottom: 25px; font-size: 15px; line-height: 1.4; }
+
+        .menu-btn { 
+            display: block; width: 100%; padding: 16px 0; margin: 12px 0; 
+            border-radius: 8px; border: none; font-size: 16px; font-weight: bold; 
+            cursor: pointer; transition: 0.2s; text-decoration: none; text-align: center;
+        }
+
+        .btn-vender { background: var(--fb-blue); color: white; }
+        .btn-validar { background: #d93025; color: white; }
+        .btn-cobrar { background: var(--wa-green); color: white; border-bottom: 3px solid #1ebe57; }
+
+        .trust-box {
+            background: #f0f2f5; padding: 15px; border-radius: 8px; font-size: 13px;
+            color: #1c1e21; margin-top: 20px; border-left: 4px solid var(--fb-blue); text-align: left;
+        }
+
+        .footer { margin-top: 30px; font-size: 12px; color: var(--fb-gray); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">TRATO</div>
+    
+    <div id="badge-estado" class="status-badge">CARGANDO...</div>
+    
+    <div id="texto-instruccion" class="slogan">
+        Iniciando protocolo de seguridad...
+    </div>
+
+    <div id="contenedor-botones">
+        </div>
+    
+    <div class="trust-box">
+        <strong>Control de Seguridad:</strong><br>
+        Cada operación genera un ID único de seguimiento. No entregue el producto sin confirmar "Fondos Asegurados".
+    </div>
+
+    <div class="footer">
+        © 2026 TRATO by RICHARD BRO<br>
+        Infraestructura de Pagos Argentina
+    </div>
+</div>
+
 <script>
     function cargarInterfaz() {
-        // Buscamos los elementos con cuidado
         const contenedor = document.getElementById('contenedor-botones');
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
         const estaValidado = localStorage.getItem('dni_verificado');
 
-        // Si el HTML todavía no cargó los IDs, salimos para no romper la pantalla
-        if (!contenedor || !badge || !instruccion) {
-            console.error("Error: No se encontraron los contenedores en el HTML");
-            return;
-        }
+        if (!contenedor || !badge || !instruccion) return;
 
-        // Limpiamos lo que haya para evitar duplicados
         contenedor.innerHTML = "";
 
         if (estaValidado === 'true') {
-            // PANTALLA 2: TODO VERIFICADO
             const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
-            
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
             badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
@@ -29,7 +96,6 @@
                 <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
             `;
         } else {
-            // PANTALLA 1: BLOQUEO TOTAL
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
@@ -54,11 +120,10 @@
         }
     }
 
-    // EL ARREGLO FINAL: 
-    // Forzamos la ejecución después de un mínimo delay para asegurar que el HTML se renderizó
-    window.addEventListener('load', cargarInterfaz);
+    // Ejecutamos la función
     document.addEventListener("DOMContentLoaded", cargarInterfaz);
-    
-    // Ejecución inmediata por si acaso
-    cargarInterfaz();
+    window.onload = cargarInterfaz;
 </script>
+
+</body>
+</html>
