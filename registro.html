@@ -23,7 +23,7 @@
 <div class="container">
     <div class="logo">TRATO</div>
     <div id="badge-estado" class="status-badge">Iniciando...</div>
-    <div id="texto-instruccion" class="slogan">Cargando sistema de seguridad...</div>
+    <div id="texto-instruccion" class="slogan">Cargando...</div>
 
     <div id="contenedor-botones"></div>
     
@@ -38,17 +38,16 @@
         const contenedor = document.getElementById('contenedor-botones');
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
-        const estaValidado = localStorage.getItem('dni_verificado');
+        
+        // Verificamos si los elementos existen en el DOM
+        if (!contenedor || !badge || !instruccion) return;
 
-        // SI NO ENCUENTRA LOS DIVS, REINTENTA EN 100ms (Evita pantalla en blanco)
-        if (!contenedor || !badge || !instruccion) {
-            setTimeout(cargarInterfaz, 100);
-            return;
-        }
+        // Leemos el estado (si es null o undefined, lo tratamos como 'false')
+        const estaValidado = localStorage.getItem('dni_verificado') === 'true';
 
         contenedor.innerHTML = "";
 
-        if (estaValidado === 'true') {
+        if (estaValidado) {
             const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
@@ -69,20 +68,20 @@
     }
 
     function nuevoTrato(id) {
-        alert("✅ ID GENERADO: " + id + "\n\nGuardalo para que el vendedor pueda cobrar.");
         localStorage.setItem('ultimo_id_generado', id);
-        window.location.href = `/vender.html?trato_id=${id}`;
+        window.location.href = "/vender.html?trato_id=" + id;
     }
 
     function solicitarCobro() {
         const idVenta = prompt("Ingrese el ID de la operación (Ej: TR-123456):");
         if (idVenta) {
-            window.location.href = `https://wa.me/543456528480?text=Hola! Solicito cobrar mi venta ID: ${idVenta}`;
+            window.location.href = "https://wa.me/543456528480?text=" + encodeURIComponent("Hola! Solicito cobrar mi venta ID: " + idVenta);
         }
     }
 
-    // Ejecutar al cargar
-    document.addEventListener("DOMContentLoaded", cargarInterfaz);
+    // DISPARO INMEDIATO Y DE RESPALDO
+    cargarInterfaz();
+    window.onload = cargarInterfaz;
 </script>
 
 </body>
