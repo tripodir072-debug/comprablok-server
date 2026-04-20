@@ -2,7 +2,10 @@
     // --- LÓGICA DE ID ---
     const urlParams = new URLSearchParams(window.location.search);
     const idDelTrato = urlParams.get('trato_id') || localStorage.getItem('ultimo_id_generado') || "TR-PENDIENTE";
-    document.getElementById('id-visible').innerText = idDelTrato;
+    
+    // Mostramos el ID arriba
+    const displayId = document.getElementById('id-visible');
+    if(displayId) displayId.innerText = idDelTrato;
 
     // --- CANDADO DE SEGURIDAD REFORZADO ---
     if (localStorage.getItem('dni_verificado') !== 'true') {
@@ -15,6 +18,7 @@
         const divResultado = document.getElementById('resultado-pago');
 
         try {
+            // Sacamos el nombre del vendedor del registro
             const vendedorLogueado = localStorage.getItem('vendedor_actual') || "Vendedor Richard Bro";
             const titulo = document.getElementById('p').value;
             const precio = document.getElementById('m').value;
@@ -24,18 +28,18 @@
                 return;
             }
 
-            btnGenerar.innerText = "⏳ GENERANDO LINK...";
+            btnGenerar.innerText = "⏳ VALIDANDO Y GENERANDO...";
             btnGenerar.disabled = true;
 
-            // Enviamos los datos al servidor de Render
+            // --- CONEXIÓN CON EL SERVIDOR DE RENDER ---
             const response = await fetch('/create_preference', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     title: titulo, 
                     price: parseFloat(precio), 
-                    vendedor: vendedorLogueado,
-                    external_reference: idDelTrato // <--- Mercado Pago usa este nombre para el ID
+                    vendedor: vendedorLogueado, // Enviamos el nombre para el ticket de MP
+                    trato_id: idDelTrato        // Enviamos el ID para el external_reference
                 })
             });
             
@@ -43,22 +47,37 @@
 
             if (data.init_point) {
                 const linkFinal = data.init_point;
-                // Mensaje de WhatsApp bien vendedor y profesional
-                const textoWA = `🛡️ PAGO SEGURO - TRATO\n\nHola! Te envío el link de pago protegido para: *${titulo}*.\n\n✅ Operación: ${idDelTrato}\n✅ Monto: $${precio}\n\nLink de pago: ${linkFinal}\n\n*La plata queda en custodia de RICHARD BRO hasta que recibas el producto.*`;
+                
+                // MENSAJE DE WHATSAPP: El "Sello de Necesidad"
+                const textoWA = `🛡️ *TRATO: COMPRA PROTEGIDA*\n\n` +
+                                `Hola! Soy *${vendedorLogueado}* (Vendedor Verificado ✅).\n\n` +
+                                `Te envío el link de pago para: *${titulo}*\n` +
+                                `💰 Monto: *$${precio}*\n` +
+                                `🆔 Operación: ${idDelTrato}\n\n` +
+                                `🔗 Pagar acá: ${linkFinal}\n\n` +
+                                `*Tu dinero queda en custodia de Richard Bro hasta que recibas el producto. Es la forma más segura de comprar.*`;
+
                 const urlWA = "https://wa.me/?text=" + encodeURIComponent(textoWA);
 
                 divResultado.innerHTML = `
-                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 5px solid #1877F2; text-align: center;">
-                        <p style="color: #1c1e21; font-weight: bold; font-size: 13px; margin-bottom: 12px;">🛡️ LINK DE CUSTODIA GENERADO</p>
-                        <a href="${urlWA}" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 12px; display: block; border-radius: 6px; font-weight: bold; font-size: 14px; margin-bottom: 10px;">ENVIAR POR WHATSAPP 📱</a>
-                        <button onclick="copiarLink('${linkFinal}')" style="background: #1877F2; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px;">COPIAR LINK MANUAL 📋</button>
+                    <div style="background: #e7f3ff; padding: 20px; border-radius: 12px; margin-top: 20px; border-left: 5px solid #1877F2; text-align: center;">
+                        <p style="color: #1c1e21; font-weight: bold; font-size: 14px; margin-bottom: 5px;">🛡️ LINK DE CUSTODIA ACTIVADO</p>
+                        <p style="font-size: 12px; color: #606770; margin-bottom: 15px;">Identidad de vendedor confirmada.</p>
+                        
+                        <a href="${urlWA}" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 14px; display: block; border-radius: 8px; font-weight: bold; font-size: 15px; margin-bottom: 10px;">
+                            ENVIAR AL COMPRADOR 📱
+                        </a>
+                        
+                        <button onclick="copiarLink('${linkFinal}')" style="background: #1877F2; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;">
+                            COPIAR LINK MANUAL 📋
+                        </button>
                     </div>
                 `;
             } else {
-                alert("Error al generar preferencia.");
+                alert("Error al conectar con Mercado Pago.");
             }
         } catch (error) {
-            alert("Error en el servidor de Render.");
+            alert("Error en el servidor. Verificá que Render esté activo.");
         } finally {
             btnGenerar.innerText = "GENERAR LINK PROTEGIDO";
             btnGenerar.disabled = false;
@@ -67,7 +86,7 @@
 
     function copiarLink(url) {
         navigator.clipboard.writeText(url).then(() => {
-            alert("✅ Link copiado al portapapeles");
+            alert("✅ Link copiado con éxito");
         });
     }
 </script>
