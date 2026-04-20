@@ -1,59 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRATO - Sistema de Custodia Seguro</title>
+    <style>
+        :root {
+            --fb-blue: #1877F2; --fb-bg: #F0F2F5; --fb-dark: #1C1E21;
+            --fb-gray: #606770; --wa-green: #25D366;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--fb-bg); color: var(--fb-dark); margin: 0; 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; 
+        }
+
+        .container { 
+            text-align: center; padding: 25px; width: 90%; max-width: 420px; 
+            background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo { font-size: 28px; font-weight: 800; color: var(--fb-blue); margin-bottom: 5px; letter-spacing: -0.5px;}
+
+        .status-badge {
+            display: inline-block; padding: 6px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase;
+        }
+
+        .slogan { color: var(--fb-gray); margin-bottom: 25px; font-size: 15px; line-height: 1.4; }
+
+        .menu-btn { 
+            display: block; width: 100%; padding: 16px 0; margin: 12px 0; 
+            border-radius: 8px; border: none; font-size: 16px; font-weight: bold; 
+            cursor: pointer; transition: 0.2s; text-decoration: none; text-align: center;
+        }
+
+        .btn-vender { background: var(--fb-blue); color: white; }
+        .btn-validar { background: #d93025; color: white; }
+        .btn-cobrar { background: var(--wa-green); color: white; border-bottom: 3px solid #1ebe57; }
+
+        .trust-box {
+            background: #f0f2f5; padding: 15px; border-radius: 8px; font-size: 13px;
+            color: #1c1e21; margin-top: 20px; border-left: 4px solid var(--fb-blue); text-align: left;
+        }
+
+        .footer { margin-top: 30px; font-size: 12px; color: var(--fb-gray); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">TRATO</div>
+    
+    <div id="badge-estado" class="status-badge">Iniciando...</div>
+    
+    <div id="texto-instruccion" class="slogan">
+        Cargando protocolo de seguridad...
+    </div>
+
+    <div id="contenedor-botones">
+        </div>
+    
+    <div class="trust-box">
+        <strong>Control de Seguridad:</strong><br>
+        Cada operación genera un ID único de seguimiento. No entregue el producto sin confirmar "Fondos Asegurados".
+    </div>
+
+    <div class="footer">
+        © 2026 TRATO by RICHARD BRO<br>
+        Infraestructura de Pagos Argentina
+    </div>
+</div>
+
 <script>
     function cargarInterfaz() {
-        // 1. Identificamos los elementos
         const contenedor = document.getElementById('contenedor-botones');
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
 
-        // Si el HTML todavía no cargó los divs, esperamos 100ms
+        // 1. Si los elementos no están en el DOM todavía, reintenta en 50ms
         if (!contenedor || !badge || !instruccion) {
-            setTimeout(cargarInterfaz, 100);
+            setTimeout(cargarInterfaz, 50);
             return;
         }
 
-        // 2. Leemos la validación (limpiamos el valor por las dudas)
-        const checkValidado = localStorage.getItem('dni_verificado');
-        
-        contenedor.innerHTML = ""; // Limpiamos pantalla
+        // 2. Verifica validación (Si no hay nada, asume 'false')
+        const estaValidado = localStorage.getItem('dni_verificado') === 'true';
 
-        if (checkValidado === 'true') {
+        contenedor.innerHTML = "";
+
+        if (estaValidado) {
             // --- PANTALLA USUARIO VERIFICADO ---
-            const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
-            
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
             badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
-            instruccion.innerHTML = "Tu identidad está protegida. Ya podés generar links de cobro seguro.";
+            instruccion.innerHTML = "Tu cuenta está activa. Ya puedes iniciar ventas seguras con custodia.";
             
             contenedor.innerHTML = `
-                <button onclick="nuevoTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
+                <button onclick="prepararTrato()" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
                 <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
             `;
         } else {
-            // --- PANTALLA BLOQUEADA (BOTÓN ROJO) ---
+            // --- PANTALLA BLOQUEO (Botón Rojo) ---
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
-            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad de RICHARD BRO, primero debés validar tu identidad.";
+            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad de Richard Bro, primero debes validar tu identidad.";
             
             contenedor.innerHTML = `
-                <button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>
+                <button onclick="location.href='registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>
             `;
         }
     }
 
-    function nuevoTrato(id) {
+    function prepararTrato() {
+        const id = "TR-" + Math.floor(100000 + Math.random() * 900000);
         localStorage.setItem('ultimo_id_generado', id);
-        window.location.href = "/vender.html?trato_id=" + id;
+        window.location.href = "vender.html?trato_id=" + id;
     }
 
     function solicitarCobro() {
-        const idVenta = prompt("Ingresá el ID de la operación:");
+        const idVenta = prompt("Ingresá el ID de la operación (Ej: TR-123456):");
         if (idVenta) {
-            window.location.href = "https://wa.me/543456528480?text=Hola Richard! Quiero cobrar la venta ID: " + idVenta;
+            const miTel = "543456528480";
+            const texto = encodeURIComponent("Hola Richard! Solicito cobrar mi venta ID: " + idVenta);
+            window.location.href = "https://wa.me/" + miTel + "?text=" + texto;
         }
     }
 
-    // Disparamos la función apenas cargue la página
-    document.addEventListener("DOMContentLoaded", cargarInterfaz);
+    // ARRANQUE SEGURO
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", cargarInterfaz);
+    } else {
+        cargarInterfaz();
+    }
 </script>
+
+</body>
+</html>
