@@ -28,17 +28,27 @@
             font-size: 12px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase;
         }
 
-        .slogan { color: var(--fb-gray); margin-bottom: 25px; font-size: 15px; line-height: 1.4; }
+        .slogan { color: var(--fb-gray); margin-bottom: 25px; font-size: 15px; line-height: 1.4; min-height: 40px; }
+
+        /* OPTIMIZACIÓN: Espaciado para que no se encimen */
+        #contenedor-botones {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Esto separa los botones perfectamente */
+            margin-bottom: 10px;
+        }
 
         .menu-btn { 
-            display: block; width: 100%; padding: 16px 0; margin: 12px 0; 
+            display: block; width: 100%; padding: 16px 0;
             border-radius: 8px; border: none; font-size: 16px; font-weight: bold; 
             cursor: pointer; transition: 0.2s; text-decoration: none; text-align: center;
+            box-sizing: border-box;
         }
 
         .btn-vender { background: var(--fb-blue); color: white; }
         .btn-validar { background: #d93025; color: white; }
         .btn-cobrar { background: var(--wa-green); color: white; border-bottom: 3px solid #1ebe57; }
+        .menu-btn:active { transform: scale(0.98); opacity: 0.9; }
 
         .trust-box {
             background: #f0f2f5; padding: 15px; border-radius: 8px; font-size: 13px;
@@ -55,16 +65,14 @@
     
     <div id="badge-estado" class="status-badge">Iniciando...</div>
     
-    <div id="texto-instruccion" class="slogan">
-        Cargando protocolo de seguridad...
-    </div>
+    <div id="texto-instruccion" class="slogan">Cargando protocolo...</div>
 
     <div id="contenedor-botones">
         </div>
     
     <div class="trust-box">
         <strong>Control de Seguridad:</strong><br>
-        Cada operación genera un ID único de seguimiento. No entregue el producto sin confirmar "Fondos Asegurados".
+        Cada operación genera un ID único. No entregue el producto sin confirmar "Fondos Asegurados".
     </div>
 
     <div class="footer">
@@ -79,64 +87,63 @@
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
 
-        // 1. Si los elementos no están en el DOM todavía, reintenta en 50ms
         if (!contenedor || !badge || !instruccion) {
             setTimeout(cargarInterfaz, 50);
             return;
         }
 
-        // 2. Verifica validación (Si no hay nada, asume 'false')
-        const estaValidado = localStorage.getItem('dni_verificado') === 'true';
-
+        // Limpiamos siempre antes de dibujar para que no se dupliquen botones
         contenedor.innerHTML = "";
 
+        const estaValidado = localStorage.getItem('dni_verificado') === 'true';
+
         if (estaValidado) {
-            // --- PANTALLA USUARIO VERIFICADO ---
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
             badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
-            instruccion.innerHTML = "Tu cuenta está activa. Ya puedes iniciar ventas seguras con custodia.";
+            instruccion.innerHTML = "Tu cuenta está activa. Ya puedes iniciar ventas seguras.";
             
             contenedor.innerHTML = `
                 <button onclick="prepararTrato()" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
-                <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
+                <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 COBRAR MI VENTA</button>
             `;
         } else {
-            // --- PANTALLA BLOQUEO (Botón Rojo) ---
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
-            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad de Richard Bro, primero debes validar tu identidad.";
+            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad, primero debes validar tu identidad.";
             
             contenedor.innerHTML = `
-                <button onclick="location.href='registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>
+                <button onclick="irARegistro()" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>
             `;
         }
     }
 
+    function irARegistro() {
+        window.location.replace("registro.html");
+    }
+
     function prepararTrato() {
+        // Generamos ID y guardamos antes de saltar
         const id = "TR-" + Math.floor(100000 + Math.random() * 900000);
         localStorage.setItem('ultimo_id_generado', id);
-        window.location.href = "vender.html?trato_id=" + id;
+        
+        // OPTIMIZACIÓN: Pequeña pausa para asegurar el guardado
+        setTimeout(() => {
+            window.location.href = "vender.html?trato_id=" + id;
+        }, 100);
     }
 
     function solicitarCobro() {
         const idVenta = prompt("Ingresá el ID de la operación (Ej: TR-123456):");
         if (idVenta) {
-            const miTel = "543456528480";
-            const texto = encodeURIComponent("Hola Richard! Solicito cobrar mi venta ID: " + idVenta);
-            window.location.href = "https://wa.me/" + miTel + "?text=" + texto;
+            window.location.href = "https://wa.me/543456528480?text=" + encodeURIComponent("Hola Richard! Quiero cobrar la venta ID: " + idVenta);
         }
     }
 
-    // ARRANQUE SEGURO
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", cargarInterfaz);
-    } else {
-        cargarInterfaz();
-    }
+    // Arranque limpio
+    window.onload = cargarInterfaz;
 </script>
 
 </body>
 </html>
-Es el index
