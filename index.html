@@ -7,13 +7,16 @@
         const estaValidado = localStorage.getItem('dni_verificado');
 
         // Si el HTML todavía no cargó los IDs, salimos para no romper la pantalla
-        if (!contenedor || !badge || !instruccion) return;
+        if (!contenedor || !badge || !instruccion) {
+            console.error("Error: No se encontraron los contenedores en el HTML");
+            return;
+        }
 
-        // Limpiamos lo que haya
+        // Limpiamos lo que haya para evitar duplicados
         contenedor.innerHTML = "";
 
         if (estaValidado === 'true') {
-            // PANTALLA 2: TODO VERIFICADO (Como la imagen 9143)
+            // PANTALLA 2: TODO VERIFICADO
             const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
             
             badge.style.background = "#e7f3ff";
@@ -26,7 +29,7 @@
                 <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
             `;
         } else {
-            // PANTALLA 1: BLOQUEO TOTAL (Como la imagen 8973)
+            // PANTALLA 1: BLOQUEO TOTAL
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
@@ -51,11 +54,11 @@
         }
     }
 
-    // ESTO ARREGLA LA PANTALLA EN BLANCO:
-    // Le dice al código que se ejecute recién cuando el HTML esté totalmente dibujado
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-        cargarInterfaz();
-    } else {
-        document.addEventListener("DOMContentLoaded", cargarInterfaz);
-    }
+    // EL ARREGLO FINAL: 
+    // Forzamos la ejecución después de un mínimo delay para asegurar que el HTML se renderizó
+    window.addEventListener('load', cargarInterfaz);
+    document.addEventListener("DOMContentLoaded", cargarInterfaz);
+    
+    // Ejecución inmediata por si acaso
+    cargarInterfaz();
 </script>
