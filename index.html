@@ -10,7 +10,7 @@
             --fb-bg: #F0F2F5;
             --fb-dark: #1C1E21;
             --fb-gray: #606770;
-            --success-green: #42B72A;
+            --wa-green: #25D366;
         }
 
         body { 
@@ -34,13 +34,7 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.1);
         }
 
-        .logo { 
-            font-size: 28px; 
-            font-weight: 800; 
-            color: var(--fb-blue); 
-            margin-bottom: 5px; 
-            letter-spacing: -0.5px;
-        }
+        .logo { font-size: 28px; font-weight: 800; color: var(--fb-blue); margin-bottom: 5px; letter-spacing: -0.5px;}
 
         .status-badge {
             display: inline-block;
@@ -54,12 +48,7 @@
             text-transform: uppercase;
         }
 
-        .slogan { 
-            color: var(--fb-gray); 
-            margin-bottom: 25px; 
-            font-size: 15px; 
-            line-height: 1.4;
-        }
+        .slogan { color: var(--fb-gray); margin-bottom: 25px; font-size: 15px; line-height: 1.4; }
 
         .menu-btn { 
             display: block; 
@@ -80,9 +69,15 @@
         .btn-vender { background: var(--fb-blue); color: white; }
         .btn-vender:hover { background: #166fe5; }
 
-        /* Estilo para cuando aún no validó */
         .btn-validar { background: #d93025; color: white; }
-        .btn-validar:hover { background: #b21f16; }
+
+        /* Estilo para el nuevo botón del Vendedor */
+        .btn-cobrar { 
+            background: var(--wa-green); 
+            color: white; 
+            border-bottom: 3px solid #1ebe57;
+        }
+        .btn-cobrar:hover { background: #1ebe57; }
 
         .trust-box {
             background: #f0f2f5;
@@ -95,11 +90,7 @@
             text-align: left;
         }
 
-        .footer { 
-            margin-top: 30px; 
-            font-size: 12px; 
-            color: var(--fb-gray); 
-        }
+        .footer { margin-top: 30px; font-size: 12px; color: var(--fb-gray); }
     </style>
 </head>
 <body>
@@ -113,10 +104,12 @@
     </div>
 
     <div id="boton-principal"></div>
+
+    <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
     
     <div class="trust-box">
-        <strong>Seguridad Automatizada:</strong><br>
-        Al operar con TRATO, los fondos son retenidos por software. La liberación del pago solo es posible mediante escaneo de QR mutuo.
+        <strong>Control de Seguridad:</strong><br>
+        Cada operación genera un ID único de seguimiento. No entregue el producto sin confirmar "Fondos Asegurados".
     </div>
 
     <div class="footer">
@@ -126,6 +119,13 @@
 </div>
 
 <script>
+    const miTelefono = "543456528480";
+
+    // Función para generar un ID de seguimiento único
+    function generarIDTrato() {
+        return "TR-" + Math.floor(100000 + Math.random() * 900000);
+    }
+
     function cargarInterfaz() {
         const estaValidado = localStorage.getItem('dni_verificado');
         const contenedor = document.getElementById('boton-principal');
@@ -133,23 +133,36 @@
         const instruccion = document.getElementById('texto-instruccion');
 
         if (estaValidado === 'true') {
-            // Si ya está validado, mostramos el botón de vender
-            contenedor.innerHTML = `<button onclick="window.location.href='/vender.html'" class="menu-btn btn-vender">Comenzar Transacción Segura</button>`;
+            // Generamos el ID para el nuevo trato
+            const nuevoID = generarIDTrato();
+            
+            contenedor.innerHTML = `<button onclick="iniciarTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>`;
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
             badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
         } else {
-            // Si NO está validado, mostramos SOLAMENTE el botón de validar
             instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad, primero debes validar tu identidad con tu DNI.";
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
-            
             contenedor.innerHTML = `<button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>`;
         }
     }
 
-    // Ejecutar al cargar la página
+    function iniciarTrato(id) {
+        // Guardamos el ID en memoria y vamos a la venta
+        localStorage.setItem('ultimo_id_generado', id);
+        window.location.href = `/vender.html?trato_id=${id}`;
+    }
+
+    function solicitarCobro() {
+        const idVenta = prompt("Ingrese el ID de la operación (Ej: TR-123456):");
+        if (idVenta) {
+            const mensaje = `Hola Richard! Soy el vendedor. Solicito cobrar mi venta con ID: ${idVenta}. Adjunto mi DNI y CBU para la transferencia.`;
+            window.location.href = `https://wa.me/${miTelefono}?text=${encodeURIComponent(mensaje)}`;
+        }
+    }
+
     window.onload = cargarInterfaz;
 </script>
 
