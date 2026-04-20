@@ -11,13 +11,15 @@
         input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #dddfe2; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         button { width: 100%; padding: 16px; background: var(--fb-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
         .footer-brand { margin-top: 20px; font-size: 12px; color: #606770; }
+        /* Estilo para el ID visible */
+        .id-badge { background: #e7f3ff; color: #1877f2; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-family: monospace; }
     </style>
 </head>
 <body>
 
 <div class="card">
     <h2 style="color: var(--fb-blue);">Nueva Venta Segura</h2>
-    <p style="font-size: 14px; color: #606770;">Generá un link de pago con custodia automática.</p>
+    <p style="font-size: 14px; color: #606770;">Operación: <span id="id-visible" class="id-badge">Cargando...</span></p>
     
     <input type="text" id="p" placeholder="¿Qué estás vendiendo?">
     <input type="number" id="m" placeholder="Monto total (AR$)">
@@ -33,8 +35,13 @@
 </div>
 
 <script>
-    // --- CANDADO DE SEGURIDAD (BLOQUEO CRÍTICO) ---
-    // Si el usuario no está validado, lo sacamos de aquí inmediatamente
+    // --- LÓGICA DE ID ---
+    const urlParams = new URLSearchParams(window.location.search);
+    // Buscamos el ID que viene del index.html
+    const idDelTrato = urlParams.get('trato_id') || localStorage.getItem('ultimo_id_generado') || "TR-PENDIENTE";
+    document.getElementById('id-visible').innerText = idDelTrato;
+
+    // --- CANDADO DE SEGURIDAD ---
     if (localStorage.getItem('dni_verificado') !== 'true') {
         alert("🔒 Acceso Denegado: Debes validar tu identidad para crear ventas.");
         window.location.href = "/registro.html";
@@ -42,7 +49,6 @@
 
     async function generarLink() {
         try {
-            // Usamos el nombre guardado en el registro como nombre de vendedor
             const vendedorLogueado = localStorage.getItem('vendedor_actual') || "Vendedor TRATO";
             const titulo = document.getElementById('p').value;
             const precio = document.getElementById('m').value;
@@ -52,17 +58,24 @@
                 return;
             }
 
+            // Enviamos el 'idDelTrato' al servidor para guardarlo con la transacción
             const response = await fetch('/create_preference', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: titulo, price: precio, vendedor: vendedorLogueado })
+                body: JSON.stringify({ 
+                    title: titulo, 
+                    price: precio, 
+                    vendedor: vendedorLogueado,
+                    trato_id: idDelTrato // <--- ESTO CONECTA TODO EL SISTEMA
+                })
             });
             
             const data = await response.json();
 
             if (data.init_point) {
                 const linkFinal = data.init_point;
-                const textoWA = "Hola! Te paso el link de pago protegido por TRATO para " + titulo + ". El dinero queda en custodia: " + linkFinal;
+                // Agregamos el ID al mensaje de WhatsApp para que el comprador lo vea
+                const textoWA = `Hola! Te paso el link de pago para "${titulo}".\nOperación: ${idDelTrato}\nLink Seguro: ${linkFinal}`;
                 const urlWA = "https://wa.me/?text=" + encodeURIComponent(textoWA);
 
                 const contenedor = document.getElementById('resultado-pago'); 
