@@ -1,48 +1,40 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - RICHARDBRO</title>
-    <style>
-        body { font-family: -apple-system, sans-serif; background: #0b0e11; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e2329; padding: 30px; border-radius: 15px; width: 320px; text-align: center; border: 1px solid #474d57; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        h2 { color: #f0b90b; margin-bottom: 5px; }
-        p { color: #848e9c; font-size: 14px; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #474d57; background: #2b3139; color: white; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 15px; background: #f0b90b; color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        button:hover { background: #d9a508; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h2>RICHARDBRO</h2>
-        <p>Infraestructura de Pagos Argentina</p>
-        <input type="text" id="user" placeholder="Tu Nombre o Usuario">
-        <button onclick="entrar()">INGRESAR AL PANEL</button>
-    </div>
+<script>
+    function entrar() {
+        const inputUser = document.getElementById('user');
+        const usuario = inputUser.value.trim();
+        
+        if(usuario !== "") {
+            // 1. Guardamos el nombre del vendedor con prioridad
+            localStorage.setItem('vendedor_actual', usuario);
+            
+            // 2. Buscamos si ya está validado
+            const validado = localStorage.getItem('dni_verificado');
+            
+            // 3. Pequeño feedback visual en el botón para que el usuario sepa que algo pasa
+            const btn = document.querySelector('button');
+            btn.innerText = "VERIFICANDO...";
+            btn.style.opacity = "0.7";
+            btn.disabled = true;
 
-    <script>
-        function entrar() {
-            const usuario = document.getElementById('user').value;
-            if(usuario.trim() !== "") {
-                // Guardamos el nombre del vendedor
-                localStorage.setItem('vendedor_actual', usuario);
-                
-                // --- FILTRO DE SEGURIDAD INTELIGENTE ---
-                const validado = localStorage.getItem('dni_verificado');
-                
+            // 4. Tiempo de espera para que la memoria del celu procese el guardado
+            setTimeout(() => {
                 if(validado === 'true') {
-                    // Si ya es un usuario viejo verificado, va al panel
-                    window.location.href = "/index.html";
+                    window.location.href = "index.html";
                 } else {
-                    // Si es nuevo o no tiene DNI cargado, va directo a validar
-                    window.location.href = "/registro.html";
+                    window.location.href = "registro.html";
                 }
-            } else {
-                alert("Por favor, ingresá un nombre para continuar.");
-            }
+            }, 500); 
+
+        } else {
+            alert("Por favor, ingresá tu nombre para continuar.");
+            inputUser.focus();
         }
-    </script>
-</body>
-</html>
+    }
+
+    // Permitir entrar tocando "Enter" en el teclado
+    document.getElementById('user').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            entrar();
+        }
+    });
+</script>
