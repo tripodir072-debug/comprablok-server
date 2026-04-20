@@ -1,36 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago Exitoso - TRATO</title>
+    <style>
+        :root { --fb-blue: #1877F2; --fb-bg: #F0F2F5; --success-green: #42B72A; --fb-gray: #606770; }
+        body { font-family: -apple-system, sans-serif; background: var(--fb-bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .success-card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .icon-check { font-size: 60px; color: var(--success-green); margin-bottom: 10px; }
+        .status-title { color: #1c1e21; font-size: 24px; font-weight: 800; margin-bottom: 5px; }
+        .custody-badge { background: #e7f3ff; color: var(--fb-blue); padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+        .transaction-box { background: #f0f2f5; padding: 15px; border-radius: 10px; text-align: left; margin-bottom: 25px; }
+        .transaction-label { color: var(--fb-gray); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .transaction-id { color: #1c1e21; font-family: monospace; font-size: 16px; font-weight: bold; display: block; margin-top: 4px; }
+        .instruction-text { font-size: 14px; color: #1c1e21; line-height: 1.5; margin-bottom: 25px; }
+        .btn-whatsapp { background: #25D366; color: white; text-decoration: none; padding: 16px; border-radius: 10px; display: block; font-weight: bold; font-size: 16px; transition: 0.2s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
+        .btn-whatsapp:active { transform: scale(0.98); }
+        .footer-note { font-size: 11px; color: #bcc0c4; margin-top: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="success-card">
+    <div class="icon-check">✅</div>
+    <div class="status-title">PAGO RECIBIDO</div>
+    <div class="custody-badge">🛡️ DINERO EN CUSTODIA ASEGURADO</div>
+    
+    <div class="transaction-box">
+        <span class="transaction-label">Número de Operación:</span>
+        <span class="transaction-id" id="id-pago">Cargando...</span>
+    </div>
+
+    <p class="instruction-text">
+        ¡Excelente! Tu dinero ya está protegido por la infraestructura de <strong>RICHARD BRO</strong>.<br><br>
+        Presioná el botón de abajo para <strong>enviar el comprobante</strong> al vendedor y coordinar la entrega.
+    </p>
+
+    <div id="contenedor-botones"></div>
+
+    <a href="/" style="color: var(--fb-gray); text-decoration: none; font-size: 13px; display: inline-block; margin-top: 20px;">Volver al inicio</a>
+
+    <div class="footer-note">
+        Operación garantizada por el protocolo de seguridad TRATO.
+    </div>
+</div>
+
 <script>
-    // --- CAPTURA DEL ID REAL ---
-    const params = new URLSearchParams(window.location.search);
-    
-    // 1. Buscamos el ID que viene de Mercado Pago (external_reference) 
-    // 2. Si no está, usamos el del sistema local
-    const idTratoReal = params.get('external_reference') || localStorage.getItem('ultimo_id_generado') || "TR-PENDIENTE";
-    
-    document.getElementById('id-pago').innerText = "OPERACIÓN: " + idTratoReal;
+    function generarPantallaExito() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // 1. Obtenemos el ID (external_reference de MP o el local)
+        const idTrato = params.get('external_reference') || localStorage.getItem('ultimo_id_generado') || "TR-CHECKOUT";
+        document.getElementById('id-pago').innerText = idTrato;
 
-    const miTel = "543456528480";
+        // 2. Armamos el link de WhatsApp para el vendedor
+        const miTel = "543456528480"; // TU TELÉFONO
+        const mensaje = `✅ PAGO REALIZADO - TRATO\n\nHola Richard! Acabo de realizar el pago.\n\n🛡️ ID Operación: ${idTrato}\n\nAdjunto el comprobante. Por favor, confirmá cuando recibas la notificación de fondos en custodia.`;
+        
+        const urlWA = `https://wa.me/${miTel}?text=${encodeURIComponent(mensaje)}`;
 
-    // MENSAJES PERSONALIZADOS
-    const msgComprador = `ORDEN DE LIBERACIÓN 🔓\nID: ${idTratoReal}\n---\nHola Richard! Ya recibí el producto conforme. Autorizo la liberación del pago al vendedor.`;
-    const msgVendedor = `SOLICITUD DE COBRO VENDEDOR 💰\nID: ${idTratoReal}\n---\nHola Richard! Entregué el producto. Adjunto mi DNI y CBU para recibir los fondos.`;
+        document.getElementById('contenedor-botones').innerHTML = `
+            <a href="${urlWA}" class="btn-whatsapp">
+                AVISAR AL VENDEDOR POR WHATSAPP 📱
+            </a>
+        `;
+    }
 
-    const linkComprador = `https://wa.me/${miTel}?text=${encodeURIComponent(msgComprador)}`;
-    const linkVendedor = `https://wa.me/${miTel}?text=${encodeURIComponent(msgVendedor)}`;
-
-    // LÓGICA DE BOTONES: Si venimos de un pago exitoso, el usuario suele ser el comprador
-    let htmlFinal = `
-        <a href="${linkComprador}" class="btn-whatsapp btn-comprador">
-            SOY EL COMPRADOR: YA RECIBÍ ✅
-        </a>
-    `;
-
-    // Solo mostramos el botón de vendedor como una opción secundaria o si es necesario
-    htmlFinal += `
-        <p style="font-size: 12px; color: #606770; margin-top: 15px;">¿Sos el vendedor?</p>
-        <a href="${linkVendedor}" style="color: var(--fb-blue); text-decoration: none; font-size: 13px; font-weight: bold;">
-            Solicitar cobro de esta operación 💵
-        </a>
-    `;
-
-    document.getElementById('contenedor-botones').innerHTML = htmlFinal;
+    // Ejecutamos al cargar
+    document.addEventListener("DOMContentLoaded", generarPantallaExito);
 </script>
+
+</body>
+</html>
