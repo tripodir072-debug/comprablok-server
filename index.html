@@ -71,7 +71,6 @@
 
         .btn-validar { background: #d93025; color: white; }
 
-        /* Estilo para el nuevo botón del Vendedor */
         .btn-cobrar { 
             background: var(--wa-green); 
             color: white; 
@@ -103,9 +102,7 @@
         El dinero de tu compra queda protegido en nuestro sistema hasta que recibas el producto.
     </div>
 
-    <div id="boton-principal"></div>
-
-    <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
+    <div id="contenedor-botones"></div>
     
     <div class="trust-box">
         <strong>Control de Seguridad:</strong><br>
@@ -121,36 +118,43 @@
 <script>
     const miTelefono = "543456528480";
 
-    // Función para generar un ID de seguimiento único
     function generarIDTrato() {
         return "TR-" + Math.floor(100000 + Math.random() * 900000);
     }
 
     function cargarInterfaz() {
         const estaValidado = localStorage.getItem('dni_verificado');
-        const contenedor = document.getElementById('boton-principal');
+        const contenedor = document.getElementById('contenedor-botones');
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
 
         if (estaValidado === 'true') {
-            // Generamos el ID para el nuevo trato
+            // PANTALLA 2: USUARIO VALIDADO
             const nuevoID = generarIDTrato();
             
-            contenedor.innerHTML = `<button onclick="iniciarTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>`;
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
             badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
+
+            // Aquí agregamos ambos botones solo si está validado
+            contenedor.innerHTML = `
+                <button onclick="iniciarTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
+                <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
+            `;
         } else {
+            // PANTALLA 1: BLOQUEO (Solo botón de validar)
             instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad, primero debes validar tu identidad con tu DNI.";
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
+            
             contenedor.innerHTML = `<button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>`;
         }
     }
 
     function iniciarTrato(id) {
-        // Guardamos el ID en memoria y vamos a la venta
+        // Mostramos el ID al usuario antes de avanzar
+        alert("✅ ID DE TRATO GENERADO: " + id + "\n\nGuardá este número para cualquier reclamo o para que el vendedor pueda cobrar.");
         localStorage.setItem('ultimo_id_generado', id);
         window.location.href = `/vender.html?trato_id=${id}`;
     }
