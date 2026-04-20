@@ -75,9 +75,7 @@
             margin-bottom: 12px;
         }
 
-        /* Verde para confirmar entrega */
         .btn-comprador { background: #25D366; }
-        /* Azul para el vendedor pidiendo su plata */
         .btn-vendedor { background: var(--fb-blue); }
 
         .btn-volver {
@@ -112,17 +110,21 @@
 </div>
 
 <script>
+    // --- CAPTURA DEL ID REAL ---
     const params = new URLSearchParams(window.location.search);
-    const paymentId = params.get('payment_id') || "TR-" + Math.floor(Math.random() * 1000000);
-    document.getElementById('id-pago').innerText = "REF: " + paymentId;
+    
+    // Intentamos sacar el ID de TRATO que guardamos en el inicio, 
+    // si no existe por alguna razón, usamos el external_reference de Mercado Pago
+    const idTratoReal = localStorage.getItem('ultimo_id_generado') || params.get('external_reference') || "TR-PENDIENTE";
+    
+    // Mostramos el ID en la tarjeta
+    document.getElementById('id-pago').innerText = "REF: " + idTratoReal;
 
     const miTel = "543456528480";
 
-    // MENSAJE PARA EL COMPRADOR
-    const msgComprador = `ORDEN DE LIBERACIÓN 🔓\nID: ${paymentId}\n---\nHola Richard! Ya recibí el producto conforme. Autorizo la liberación del pago al vendedor.`;
-    
-    // MENSAJE PARA EL VENDEDOR
-    const msgVendedor = `SOLICITUD DE COBRO VENDEDOR 💰\nID: ${paymentId}\n---\nHola Richard! Entregué el producto. Adjunto mi DNI y CBU para recibir los fondos.`;
+    // MENSAJES USANDO EL ID REAL
+    const msgComprador = `ORDEN DE LIBERACIÓN 🔓\nID: ${idTratoReal}\n---\nHola Richard! Ya recibí el producto conforme. Autorizo la liberación del pago al vendedor.`;
+    const msgVendedor = `SOLICITUD DE COBRO VENDEDOR 💰\nID: ${idTratoReal}\n---\nHola Richard! Entregué el producto. Adjunto mi DNI y CBU para recibir los fondos.`;
 
     const linkComprador = `https://wa.me/${miTel}?text=${encodeURIComponent(msgComprador)}`;
     const linkVendedor = `https://wa.me/${miTel}?text=${encodeURIComponent(msgVendedor)}`;
