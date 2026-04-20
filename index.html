@@ -1,65 +1,59 @@
 <script>
     function cargarInterfaz() {
+        // 1. Identificamos los elementos
         const contenedor = document.getElementById('contenedor-botones');
         const badge = document.getElementById('badge-estado');
         const instruccion = document.getElementById('texto-instruccion');
-        
-        // SEGURIDAD: Forzamos que si no hay nada, el valor sea falso
-        const estaValidado = localStorage.getItem('dni_verificado') || 'false';
 
+        // Si el HTML todavía no cargó los divs, esperamos 100ms
         if (!contenedor || !badge || !instruccion) {
-            // Si el HTML no cargó, esperamos un milisegundo y reintentamos
-            setTimeout(cargarInterfaz, 50);
+            setTimeout(cargarInterfaz, 100);
             return;
         }
 
-        // Limpiamos siempre antes de dibujar
-        contenedor.innerHTML = "";
+        // 2. Leemos la validación (limpiamos el valor por las dudas)
+        const checkValidado = localStorage.getItem('dni_verificado');
+        
+        contenedor.innerHTML = ""; // Limpiamos pantalla
 
-        if (estaValidado === 'true') {
-            // PANTALLA 2: TODO VERIFICADO (Botones Azul y Verde)
+        if (checkValidado === 'true') {
+            // --- PANTALLA USUARIO VERIFICADO ---
             const nuevoID = "TR-" + Math.floor(100000 + Math.random() * 900000);
             
             badge.style.background = "#e7f3ff";
             badge.style.color = "#1877f2";
             badge.innerText = "🛡️ IDENTIDAD VERIFICADA";
-            instruccion.innerHTML = "Tu identidad fue confirmada por Richard Bro. Ya podés operar con seguridad.";
+            instruccion.innerHTML = "Tu identidad está protegida. Ya podés generar links de cobro seguro.";
             
             contenedor.innerHTML = `
                 <button onclick="nuevoTrato('${nuevoID}')" class="menu-btn btn-vender">🤝 INICIAR TRATO SEGURO</button>
                 <button onclick="solicitarCobro()" class="menu-btn btn-cobrar">💰 SOY VENDEDOR: COBRAR MI VENTA</button>
             `;
         } else {
-            // PANTALLA 1: BLOQUEO TOTAL (Botón Rojo - Foto 8973)
+            // --- PANTALLA BLOQUEADA (BOTÓN ROJO) ---
             badge.style.background = "#ffebe9";
             badge.style.color = "#d93025";
             badge.innerText = "⚠️ VALIDACIÓN PENDIENTE";
-            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad del protocolo TRATO, primero debés validar tu identidad con DNI.";
+            instruccion.innerHTML = "<strong>Acceso restringido:</strong> Por seguridad de RICHARD BRO, primero debés validar tu identidad.";
             
             contenedor.innerHTML = `
-                <button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">
-                    VALIDAR MI IDENTIDAD (DNI)
-                </button>
+                <button onclick="window.location.href='/registro.html'" class="menu-btn btn-validar">VALIDAR MI IDENTIDAD (DNI)</button>
             `;
         }
     }
 
     function nuevoTrato(id) {
-        alert("✅ ID DE TRATO GENERADO: " + id + "\n\nGuardá este número para que el vendedor pueda cobrar.");
         localStorage.setItem('ultimo_id_generado', id);
-        window.location.href = `/vender.html?trato_id=${id}`;
+        window.location.href = "/vender.html?trato_id=" + id;
     }
 
     function solicitarCobro() {
-        const idVenta = prompt("Ingrese el ID de la operación (Ej: TR-123456):");
+        const idVenta = prompt("Ingresá el ID de la operación:");
         if (idVenta) {
-            const miTel = "543456528480";
-            const msg = `Hola Richard! Soy vendedor. Solicito cobrar mi venta ID: ${idVenta}. Adjunto DNI y CBU.`;
-            window.location.href = `https://wa.me/${miTel}?text=${encodeURIComponent(msg)}`;
+            window.location.href = "https://wa.me/543456528480?text=Hola Richard! Quiero cobrar la venta ID: " + idVenta;
         }
     }
 
-    // Doble disparo para asegurar que el botón aparezca sí o sí
+    // Disparamos la función apenas cargue la página
     document.addEventListener("DOMContentLoaded", cargarInterfaz);
-    window.onload = cargarInterfaz;
 </script>
