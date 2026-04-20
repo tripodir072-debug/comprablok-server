@@ -9,6 +9,7 @@
             --fb-blue: #1877F2;
             --fb-bg: #F0F2F5;
             --success-green: #42B72A;
+            --fb-gray: #606770;
         }
 
         body { 
@@ -31,11 +32,7 @@
             text-align: center; 
         }
 
-        .icon-shield {
-            font-size: 60px;
-            color: var(--fb-blue);
-            margin-bottom: 15px;
-        }
+        .icon-shield { font-size: 60px; margin-bottom: 15px; }
 
         .status-title {
             color: var(--success-green);
@@ -60,31 +57,28 @@
             background: #e7f3ff;
             border-left: 5px solid var(--fb-blue);
             padding: 15px;
-            font-size: 14px;
+            font-size: 13px;
             color: #1c1e21;
             line-height: 1.5;
             margin-bottom: 25px;
         }
 
-        /* ESTILO PARA EL NUEVO BOTÓN DE WHATSAPP */
         .btn-whatsapp {
-            background: #25D366;
             color: white;
             text-decoration: none;
-            padding: 18px 20px;
+            padding: 16px 15px;
             border-radius: 10px;
             display: block;
             font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            font-size: 15px;
             transition: 0.2s;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
-        .btn-whatsapp:hover {
-            background: #1eb954;
-            transform: translateY(-2px);
-        }
+        /* Verde para confirmar entrega */
+        .btn-comprador { background: #25D366; }
+        /* Azul para el vendedor pidiendo su plata */
+        .btn-vendedor { background: var(--fb-blue); }
 
         .btn-volver {
             color: var(--fb-gray);
@@ -99,17 +93,16 @@
 
 <div class="success-card">
     <div class="icon-shield">🛡️</div>
-    <div class="status-title">FONDOS ASEGURADOS</div>
+    <div class="status-title">PAGO ASEGURADO</div>
     
     <div class="transaction-id" id="id-pago">REF: CARGANDO...</div>
 
     <div class="trust-message">
-        <strong>Confirmación del Sistema:</strong><br>
-        El pago ha sido procesado correctamente y se encuentra bajo el <strong>Protocolo de Custodia de TRATO</strong>.<br><br>
-        <strong>Vendedor:</strong> Al entregar el producto, presiona el botón de abajo para solicitar tu dinero.
+        <strong>Estado del Protocolo:</strong><br>
+        Los fondos están bajo custodia. Para finalizar, el comprador debe confirmar la recepción o el vendedor solicitar el cobro adjuntando comprobante de entrega.
     </div>
 
-    <div id="contenedor-boton"></div>
+    <div id="contenedor-botones"></div>
 
     <a href="/" class="btn-volver">Ir al inicio</a>
 
@@ -119,29 +112,27 @@
 </div>
 
 <script>
-    // 1. Capturamos los datos que nos manda Mercado Pago en la URL
     const params = new URLSearchParams(window.location.search);
     const paymentId = params.get('payment_id') || "TR-" + Math.floor(Math.random() * 1000000);
-    
-    // Mostramos el ID en la tarjeta
     document.getElementById('id-pago').innerText = "REF: " + paymentId;
 
-    // 2. Configuración del mensaje automático para RICHARD
     const miTel = "543456528480";
-    const textoBase = `SOLICITUD DE LIBERACIÓN DE FONDOS 🛡️
----
-ID Operación: ${paymentId}
----
-Confirmo que el producto ha sido entregado correctamente. Solicito a TRATO la liberación de los fondos a mi cuenta.
 
-Adjunto mi DNI y CBU/CVU.`;
+    // MENSAJE PARA EL COMPRADOR
+    const msgComprador = `ORDEN DE LIBERACIÓN 🔓\nID: ${paymentId}\n---\nHola Richard! Ya recibí el producto conforme. Autorizo la liberación del pago al vendedor.`;
+    
+    // MENSAJE PARA EL VENDEDOR
+    const msgVendedor = `SOLICITUD DE COBRO VENDEDOR 💰\nID: ${paymentId}\n---\nHola Richard! Entregué el producto. Adjunto mi DNI y CBU para recibir los fondos.`;
 
-    const linkFinal = `https://wa.me/${miTel}?text=${encodeURIComponent(textoBase)}`;
+    const linkComprador = `https://wa.me/${miTel}?text=${encodeURIComponent(msgComprador)}`;
+    const linkVendedor = `https://wa.me/${miTel}?text=${encodeURIComponent(msgVendedor)}`;
 
-    // 3. Inyectamos el botón en el HTML
-    document.getElementById('contenedor-boton').innerHTML = `
-        <a href="${linkFinal}" class="btn-whatsapp">
-            CONFIRMAR ENTREGA Y COBRAR 📱
+    document.getElementById('contenedor-botones').innerHTML = `
+        <a href="${linkComprador}" class="btn-whatsapp btn-comprador">
+            SOY EL COMPRADOR: YA RECIBÍ ✅
+        </a>
+        <a href="${linkVendedor}" class="btn-whatsapp btn-vendedor">
+            SOY EL VENDEDOR: QUIERO COBRAR 💵
         </a>
     `;
 </script>
