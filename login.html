@@ -5,30 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - RICHARDBRO</title>
     <style>
-        body { font-family: sans-serif; background: #0b0e11; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e2329; padding: 30px; border-radius: 15px; width: 320px; text-align: center; border: 1px solid #474d57; }
-        h2 { color: #f0b90b; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #474d57; background: #2b3139; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #f0b90b; color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        body { font-family: -apple-system, sans-serif; background: #0b0e11; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e2329; padding: 30px; border-radius: 15px; width: 320px; text-align: center; border: 1px solid #474d57; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        h2 { color: #f0b90b; margin-bottom: 5px; }
+        p { color: #848e9c; font-size: 14px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #474d57; background: #2b3139; color: white; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 15px; background: #f0b90b; color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #d9a508; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>RICHARDBRO</h2>
-        <p>Iniciá sesión para controlar tus ventas</p>
+        <p>Infraestructura de Pagos Argentina</p>
         <input type="text" id="user" placeholder="Tu Nombre o Usuario">
-        <button onclick="entrar()">INGRESAR</button>
+        <button onclick="entrar()">INGRESAR AL PANEL</button>
     </div>
 
     <script>
         function entrar() {
             const usuario = document.getElementById('user').value;
             if(usuario.trim() !== "") {
-                // Esto guarda quién sos en el celu para que no se borre
+                // Guardamos el nombre del vendedor
                 localStorage.setItem('vendedor_actual', usuario);
-                window.location.href = "/index.html";
+                
+                // --- FILTRO DE SEGURIDAD INTELIGENTE ---
+                const validado = localStorage.getItem('dni_verificado');
+                
+                if(validado === 'true') {
+                    // Si ya es un usuario viejo verificado, va al panel
+                    window.location.href = "/index.html";
+                } else {
+                    // Si es nuevo o no tiene DNI cargado, va directo a validar
+                    window.location.href = "/registro.html";
+                }
             } else {
-                alert("Poné un nombre para continuar");
+                alert("Por favor, ingresá un nombre para continuar.");
             }
         }
     </script>
