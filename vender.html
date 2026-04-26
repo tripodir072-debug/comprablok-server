@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Terminal TRATO - Richard Bro</title>
+    <style>
+        :root { --blue: #1877F2; --neon: #00d2ff; --dark: #020617; }
+        body { background: var(--dark); color: white; font-family: sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); padding: 30px; border-radius: 40px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
+        input { width: 100%; background: #0f172a; border: 2px solid #1e293b; padding: 18px; margin: 10px 0; border-radius: 20px; color: white; font-size: 16px; box-sizing: border-box; text-align: center; outline: none; }
+        .total { font-size: 28px; font-weight: 900; color: #2ecc71; margin: 20px 0; text-shadow: 0 0 10px rgba(46, 204, 113, 0.3); }
+        .btn-gen { width: 100%; background: var(--blue); color: white; border: none; padding: 22px; border-radius: 22px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        #wa-btn { display: none; background: #25D366; color: white; padding: 22px; border-radius: 22px; margin-top: 20px; text-decoration: none; font-weight: 900; text-align: center; }
+        .footer-logo { margin-top: 20px; font-size: 12px; opacity: 0.5; color: white; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div style="font-size:50px">🛡️</div>
+        <h2 style="margin:0; letter-spacing:-1px; font-size:28px">TRATO™</h2>
+        <p style="color:var(--neon); font-size:10px; font-weight:bold; letter-spacing:2px; margin-bottom:20px">SISTEMA ANTIESTAFAS</p>
+        
+        <input type="text" id="prod" placeholder="¿Qué estás vendiendo?">
+        <input type="number" id="monto" placeholder="Monto Vendedor ($)" oninput="calc()">
+        
+        <div style="font-size:12px; color:#94a3b8; margin-top:15px">MONTO TOTAL (15% CUSTODIA):</div>
+        <div class="total" id="t-display">$0</div>
+        
+        <button class="btn-gen" id="btn-crear" onclick="crear()">GENERAR LINK DE COBRO 📱</button>
+        <a id="wa-btn" href="#">ENVIAR POR WHATSAPP 🚀</a>
+        
+        <div class="footer-logo">RICHARDBRO® ARBITRAGE</div>
+    </div>
+
+    <script>
+        // LINK DE TU SERVIDOR EN RENDER
+        const API_URL = "https://comprablok-server-kju8.onrender.com";
+
+        function calc() {
+            const m = parseFloat(document.getElementById('monto').value) || 0;
+            const total = m * 1.15;
+            document.getElementById('t-display').innerText = `$${total.toLocaleString('es-AR')}`;
+        }
+
+        async function crear() {
+            const m = document.getElementById('monto').value;
+            const p = document.getElementById('prod').value;
+            const total = parseFloat(m) * 1.15;
+
+            if(!m || !p) return alert("Richard, completá los datos del trato.");
+            
+            const btn = document.getElementById('btn-crear');
+            btn.innerText = "⚡ CONECTANDO AL BÚNKER...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_URL}/create_preference`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: p.toUpperCase(), price: total })
+                });
+                
+                const d = await res.json();
+                
+                if(d.init_point) {
+                    const msg = `🛡️ *TRATO SEGURO - COMPRABLOK™*\n\n🤝 *PRODUCTO:* ${p.toUpperCase()}\n💰 *MONTO TOTAL:* $${total.toLocaleString('es-AR')}\n\n🔗 *PAGAR AQUÍ:* ${d.init_point}\n\n_Tu dinero queda en custodia segura hasta que confirmes la entrega._`;
+                    
+                    const wa = document.getElementById('wa-btn');
+                    wa.href = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+                    wa.style.display = 'block';
+                    btn.style.display = 'none';
+                } else {
+                    throw new Error("Sin init_point");
+                }
+            } catch (e) {
+                alert("El servidor se está despertando (tarda 30 segs la primera vez). Volvé a intentar.");
+                btn.disabled = false;
+                btn.innerText = "GENERAR LINK DE COBRO 📱";
+            }
+        }
+    </script>
+</body>
+</html>
