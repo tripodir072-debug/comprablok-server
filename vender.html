@@ -34,8 +34,8 @@
     </div>
 
     <script>
-        // LINK CORREGIDO CON "A" (kja8)
-        const API_URL = "https://comprablok-server-kja8.onrender.com";
+        // CONFIGURACIÓN PARA VERCEL (Ruta relativa)
+        const API_URL = "/api"; 
 
         function calc() {
             const m = parseFloat(document.getElementById('monto').value) || 0;
@@ -55,6 +55,7 @@
             btn.disabled = true;
 
             try {
+                // LLAMADA A LA API DE VERCEL
                 const res = await fetch(`${API_URL}/create_preference`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -74,7 +75,7 @@
                     throw new Error("Sin init_point");
                 }
             } catch (e) {
-                alert("El servidor se está despertando (tarda 30 segs la primera vez). Volvé a intentar.");
+                alert("Error al conectar. Asegurate de que el búnker esté activo en Vercel.");
                 btn.disabled = false;
                 btn.innerText = "GENERAR LINK DE COBRO 📱";
             }
