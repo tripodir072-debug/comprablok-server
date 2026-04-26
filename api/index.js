@@ -7,13 +7,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// CONFIGURACIÓN DE MERCADO PAGO
 const client = new mercadopago.MercadoPagoConfig({ 
     accessToken: 'APP_USR-7170138245785084-040212-073be49b9f939e0d1645e3f421f579ce-1752495817' 
 });
 
 const preference = new mercadopago.Preference(client);
 
-// API para crear pagos
+// API PARA CREAR EL LINK DE PAGO
 app.post('/api/create_preference', async (req, res) => {
     try {
         const body = {
@@ -32,18 +33,18 @@ app.post('/api/create_preference', async (req, res) => {
         const response = await preference.create({ body });
         res.json({ init_point: response.init_point });
     } catch (error) {
-        res.status(500).json({ error: "Error" });
+        console.error(error);
+        res.status(500).json({ error: "Error al crear pago" });
     }
 });
 
-// Ruta para el Login (Fachada)
+// RUTAS PARA MOSTRAR TUS PÁGINAS
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../index.html'));
+    res.sendFile(path.join(process.cwd(), 'index.html'));
 });
 
-// Ruta para la Terminal (Vender)
 app.get('/vender', (req, res) => {
-    res.sendFile(path.join(__dirname, '../vender.html'));
+    res.sendFile(path.join(process.cwd(), 'vender.html'));
 });
 
 module.exports = app;
