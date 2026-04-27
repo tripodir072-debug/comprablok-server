@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TRATO - Seguridad en tus Compras</title>
+    <style>
+        :root { --blue: #1877F2; --neon: #00d2ff; --dark: #020617; }
+        body { 
+            background: var(--dark); 
+            color: white; 
+            font-family: sans-serif; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden;
+        }
+        .container { text-align: center; padding: 20px; }
+        .shield { font-size: 80px; margin-bottom: 10px; filter: drop-shadow(0 0 20px var(--blue)); }
+        h1 { font-size: 40px; margin: 0; letter-spacing: -2px; }
+        p { color: var(--neon); font-weight: bold; letter-spacing: 3px; font-size: 12px; margin-bottom: 30px; }
+        .btn-ingresar { 
+            background: var(--blue); 
+            color: white; 
+            text-decoration: none; 
+            padding: 20px 40px; 
+            border-radius: 50px; 
+            font-weight: 900; 
+            font-size: 18px;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(24, 119, 242, 0.4);
+        }
+        .footer { position: absolute; bottom: 30px; font-size: 10px; opacity: 0.4; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="shield">🛡️</div>
+        <h1>TRATO™</h1>
+        <p>BÚNKER ANTIESTAFAS</p>
+        
+        <a href="/vender" class="btn-ingresar" onclick="ingresar()">INGRESAR AL SISTEMA</a>
+
+        <div class="footer">RICHARDBRO® ARBITRAGE - ARGENTINA 2026</div>
+    </div>
+
+    <script>
+        function ingresar() {
+            const pass = prompt("LLAVE MAESTRA:");
+            if(pass !== "richardbro2026") {
+                alert("ACCESO DENEGADO");
+                event.preventDefault();
+            }
+        }
+    </script>
+</body>
+</html>
